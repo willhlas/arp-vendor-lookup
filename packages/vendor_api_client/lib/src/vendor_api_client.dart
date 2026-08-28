@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:vendor_api_client/vendor_api_client.dart';
 
 class VendorApiClient {
-  const VendorApiClient({
-    required this._httpClient,
+  VendorApiClient({
     required this._baseUrl,
-  });
+    http.Client? httpClient,
+  }) : _httpClient = httpClient ?? http.Client();
 
-  final http.Client _httpClient;
   final String _baseUrl;
+  final http.Client _httpClient;
 
   Future<Lookup> lookupByMac(String mac) async {
     final uri = Uri.parse('$_baseUrl/lookups').replace(

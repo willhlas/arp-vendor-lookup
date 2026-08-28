@@ -8,12 +8,25 @@ environment:
   flutter: 3.44.6
 
 dependencies:
+  app_ui:
+    path: ../packages/app_ui
+  arp_resolver:
+    path: ../packages/arp_resolver
+  bloc: ^9.2.1
+  equatable: ^2.1.0
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
+  vendor_api_client:
+    path: ../packages/vendor_api_client
+  vendor_lookup_repository:
+    path: ../packages/vendor_lookup_repository
 
 dev_dependencies:
+  bloc_test: ^10.0.0
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.5
   very_good_analysis: ^10.3.0
 
 flutter:

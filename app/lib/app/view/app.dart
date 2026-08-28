@@ -1,11 +1,22 @@
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({
+    required this.vendorLookupRepository,
+    super.key,
+  });
+
+  final VendorLookupRepository vendorLookupRepository;
 
   @override
   Widget build(BuildContext context) {
-    return const AppView();
+    return BlocProvider(
+      create: (_) => VendorBloc(vendorLookupRepository: vendorLookupRepository),
+      child: const AppView(),
+    );
   }
 }
 
