@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Rails API",
+      "type": "shell",
+      "command": "bin/rails server",
+      "options": {
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "PATH": "${env:HOME}/.local/share/mise/shims:${env:PATH}"
+        },
+        "shell": {
+          "executable": "/bin/zsh",
+          "args": ["-c"]
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Puma starting",
+          "endsPattern": "Listening on"
+        }
+      },
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run app + API (macOS)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "app",
+      "program": "lib/main.dart",
+      "deviceId": "macos",
+      "flutterMode": "debug",
+      "preLaunchTask": "Start Rails API"
+    }
+  ]
+}

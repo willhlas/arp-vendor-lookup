@@ -11,7 +11,6 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
     : super(const VendorState()) {
     on<VendorLookupRequested>(_onLookupRequested);
     on<VendorRecentLookupsRequested>(_onRecentLookupsRequested);
-    add(const VendorRecentLookupsRequested());
   }
 
   final VendorLookupRepository _vendorLookupRepository;
