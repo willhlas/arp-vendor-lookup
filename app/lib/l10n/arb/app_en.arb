@@ -1,0 +1,169 @@
+{
+  "@@locale": "en",
+  "appTitle": "ARP Vendor Lookup",
+  "@appTitle": {
+    "description": "The app's name, shown in the header and window title."
+  },
+  "appSubtitle": "IP → MAC → Vendor, resolved locally",
+  "@appSubtitle": {
+    "description": "Tagline shown under the app title in the header."
+  },
+  "apiConnectedLabel": "API connected",
+  "@apiConnectedLabel": {
+    "description": "Static status label next to the header's connection indicator dot."
+  },
+  "lookupFormHeading": "Look up an address",
+  "@lookupFormHeading": {
+    "description": "Heading of the IP lookup form card."
+  },
+  "ipAddressLabel": "IP address",
+  "@ipAddressLabel": {
+    "description": "Label for the IP address field, reused as the row label for IP in result cards."
+  },
+  "ipAddressPlaceholder": "192.168.1.24",
+  "@ipAddressPlaceholder": {
+    "description": "Placeholder text shown in the empty IP address input."
+  },
+  "lookupButtonLabel": "Look up",
+  "@lookupButtonLabel": {
+    "description": "Label of the button that submits a lookup."
+  },
+  "lookupHelperText": "Reads the local ARP table for the MAC, then resolves the vendor via the lookup API.",
+  "@lookupHelperText": {
+    "description": "Helper text explaining what the lookup form does."
+  },
+  "emptyStateTitle": "No lookup yet",
+  "@emptyStateTitle": {
+    "description": "Title shown before any lookup has been performed."
+  },
+  "emptyStateBody": "Enter an IP address above to resolve its vendor.",
+  "@emptyStateBody": {
+    "description": "Body text shown before any lookup has been performed."
+  },
+  "loadingStateText": "Querying ARP table and resolving vendor…",
+  "@loadingStateText": {
+    "description": "Text shown while a lookup is in progress."
+  },
+  "resultHeading": "Result",
+  "@resultHeading": {
+    "description": "Heading of the result card."
+  },
+  "resolvedBadgeLabel": "Resolved",
+  "@resolvedBadgeLabel": {
+    "description": "Badge label when a lookup fully resolved to a known vendor."
+  },
+  "unknownVendorBadgeLabel": "Vendor unknown",
+  "@unknownVendorBadgeLabel": {
+    "description": "Badge label when a MAC was found but no vendor matched it."
+  },
+  "noArpEntryBadgeLabel": "No ARP entry",
+  "@noArpEntryBadgeLabel": {
+    "description": "Badge label when the IP had no entry in the local ARP table."
+  },
+  "macAddressRowLabel": "MAC address",
+  "@macAddressRowLabel": {
+    "description": "Row label for the MAC address value in a result card."
+  },
+  "vendorRowLabel": "Vendor",
+  "@vendorRowLabel": {
+    "description": "Row label for the vendor value in a result card."
+  },
+  "noVendorMatchText": "No vendor match found",
+  "@noVendorMatchText": {
+    "description": "Shown in the vendor row when a MAC was found but has no known vendor."
+  },
+  "noArpEntryExplanation": "No ARP entry found for this address — a vendor lookup was not attempted.",
+  "@noArpEntryExplanation": {
+    "description": "Explanation shown when the IP has no local ARP table entry at all."
+  },
+  "lookupFailedTitle": "Lookup failed",
+  "@lookupFailedTitle": {
+    "description": "Generic title for a failed lookup, regardless of the underlying cause."
+  },
+  "invalidIpTitle": "Invalid IP address",
+  "@invalidIpTitle": {
+    "description": "Title shown when the entered text is not a valid IPv4 address."
+  },
+  "invalidIpBody": "\"{value}\" is not a valid IPv4 address. Check the format and try again.",
+  "@invalidIpBody": {
+    "description": "Body shown when the entered text is not a valid IPv4 address.",
+    "placeholders": {
+      "value": {
+        "type": "String",
+        "example": "999.1.1.1"
+      }
+    }
+  },
+  "recentLookupsHeading": "Recent lookups",
+  "@recentLookupsHeading": {
+    "description": "Heading of the recent lookups panel."
+  },
+  "recentLookupsCount": "{count} total",
+  "@recentLookupsCount": {
+    "description": "Count label shown next to the recent lookups heading.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "macColumnHeader": "MAC",
+  "@macColumnHeader": {
+    "description": "Column header for the MAC address in the recent lookups table."
+  },
+  "vendorColumnHeader": "Vendor",
+  "@vendorColumnHeader": {
+    "description": "Column header for the vendor in the recent lookups table."
+  },
+  "timeColumnHeader": "Time",
+  "@timeColumnHeader": {
+    "description": "Column header for the timestamp in the recent lookups table."
+  },
+  "recentLookupsEmpty": "Lookups will appear here once you search.",
+  "@recentLookupsEmpty": {
+    "description": "Shown when there are no recent lookups yet."
+  },
+  "recentLookupsLoading": "Loading recent lookups…",
+  "@recentLookupsLoading": {
+    "description": "Shown while recent lookups are being fetched."
+  },
+  "recentLookupsError": "Couldn't load recent lookups.",
+  "@recentLookupsError": {
+    "description": "Shown when fetching recent lookups failed."
+  },
+  "unknownVendorRowText": "Unknown vendor",
+  "@unknownVendorRowText": {
+    "description": "Shown in a recent lookups row when the MAC has no known vendor."
+  },
+  "timeJustNow": "Just now",
+  "@timeJustNow": {
+    "description": "Relative time label for events less than a minute ago."
+  },
+  "timeMinutesAgo": "{minutes}m ago",
+  "@timeMinutesAgo": {
+    "description": "Relative time label for events less than an hour ago.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{hours}h ago",
+  "@timeHoursAgo": {
+    "description": "Relative time label for events less than a day ago.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{days}d ago",
+  "@timeDaysAgo": {
+    "description": "Relative time label for events a day or more ago.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
+}

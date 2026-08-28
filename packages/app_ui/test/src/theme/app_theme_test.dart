@@ -3,8 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group(AppTheme, () {
-    test('can be instantiated', () {
-      expect(const AppTheme(), isNotNull);
+    test('exposes ThemeData built from the app colors and text theme', () {
+      final theme = const AppTheme().themeData;
+
+      expect(theme.scaffoldBackgroundColor, AppColors.background);
+      expect(theme.colorScheme.primary, AppColors.accent);
+      expect(theme.colorScheme.error, AppColors.error);
+      expect(theme.textTheme.bodyMedium?.color, AppColors.textPrimary);
     });
   });
 }

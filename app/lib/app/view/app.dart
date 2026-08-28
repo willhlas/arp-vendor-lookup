@@ -1,3 +1,5 @@
+import 'package:app_ui/app_ui.dart';
+import 'package:arp_vendor_lookup/l10n/l10n.dart';
 import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +16,9 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => VendorBloc(vendorLookupRepository: vendorLookupRepository),
+      create: (_) =>
+          VendorBloc(vendorLookupRepository: vendorLookupRepository)
+            ..add(const VendorRecentLookupsRequested()),
       child: const AppView(),
     );
   }
@@ -27,12 +31,10 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('ARP Vendor Lookup')),
-        body: const Center(
-          child: Text('Welcome to the ARP Vendor Lookup app!'),
-        ),
-      ),
+      theme: const AppTheme().themeData,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const LookupPage(),
     );
   }
 }
