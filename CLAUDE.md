@@ -202,14 +202,17 @@ size.
 - **Config and secrets** (the vendor API key/URL, if the chosen provider
   needs one) go through Rails credentials or environment variables —
   never hardcoded in a service class.
-- **Generated infrastructure not in scope has been removed.** `rails new
-  api --api` scaffolds Solid Queue, Solid Cache, Solid Cable, and Active
-  Storage by default (Rails 8 new-app defaults, unrelated to `--api`).
-  This app has no background jobs, no caching layer, no websockets, and
-  no file uploads, so those were deliberately stripped rather than left
-  in unused — don't re-add any of them without a concrete feature that
-  needs it (YAGNI). Kamal deployment files may or may not be present
-  depending on whether a deploy target was decided at scaffold time.
+- **Generated infrastructure not in scope is still present, but unused.**
+  `rails new api --api` scaffolds Solid Queue, Solid Cache, Solid Cable,
+  and Active Storage by default (Rails 8 new-app defaults, unrelated to
+  `--api`). This app has no background jobs, no caching layer, no
+  websockets, and no file uploads — those gems are currently still in the
+  Gemfile from the scaffold but aren't used anywhere, and removing them is
+  a separate cleanup that hasn't happened yet. Don't build a feature that
+  assumes they're gone, and don't add new code that leans on any of them
+  without a concrete need (YAGNI). Kamal deployment files may or may not
+  be present depending on whether a deploy target was decided at scaffold
+  time.
 
 ## Testing
 
