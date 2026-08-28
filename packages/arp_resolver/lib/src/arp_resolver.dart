@@ -1,0 +1,3 @@
+class ArpResolver {
+  const ArpResolver();
+}
