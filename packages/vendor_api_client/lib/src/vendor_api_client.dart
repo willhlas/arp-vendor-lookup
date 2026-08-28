@@ -1,0 +1,3 @@
+class VendorApiClient {
+  const VendorApiClient();
+}

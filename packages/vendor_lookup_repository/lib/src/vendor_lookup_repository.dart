@@ -1,0 +1,3 @@
+class VendorLookupRepository {
+  const VendorLookupRepository();
+}
