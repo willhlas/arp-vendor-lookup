@@ -1,0 +1,4 @@
+192.168.1.1 dev eth0 lladdr 5c:35:fc:e1:ee:94 STALE
+192.168.1.121 dev eth0 lladdr 0c:1c:57:77:5f:35 REACHABLE
+192.168.1.150 dev eth0 FAILED
+169.254.169.254 dev eth0 INCOMPLETE

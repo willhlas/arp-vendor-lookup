@@ -53,3 +53,51 @@ class MacosArpResolver implements ArpResolver {
     return parseMacosArpOutput(result.stdout as String, ip);
   }
 }
+
+class LinuxArpResolver implements ArpResolver {
+  const LinuxArpResolver({required this._runProcess});
+
+  final ArpProcessRunner _runProcess;
+
+  @override
+  Future<ArpEntry?> resolve(String ip) async {
+    final ProcessResult result;
+    try {
+      result = await _runProcess('ip', ['neigh', 'show']);
+    } catch (e) {
+      throw ArpCommandFailure('could not run the ip neigh command: $e');
+    }
+
+    if (result.exitCode != 0) {
+      throw ArpCommandFailure(
+        'ip neigh exited with code ${result.exitCode}: ${result.stderr}',
+      );
+    }
+
+    return parseLinuxArpOutput(result.stdout as String, ip);
+  }
+}
+
+class WindowsArpResolver implements ArpResolver {
+  const WindowsArpResolver({required this._runProcess});
+
+  final ArpProcessRunner _runProcess;
+
+  @override
+  Future<ArpEntry?> resolve(String ip) async {
+    final ProcessResult result;
+    try {
+      result = await _runProcess('arp', ['-a']);
+    } catch (e) {
+      throw ArpCommandFailure('could not run the arp command: $e');
+    }
+
+    if (result.exitCode != 0) {
+      throw ArpCommandFailure(
+        'arp exited with code ${result.exitCode}: ${result.stderr}',
+      );
+    }
+
+    return parseWindowsArpOutput(result.stdout as String, ip);
+  }
+}

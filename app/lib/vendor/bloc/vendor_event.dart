@@ -19,3 +19,7 @@ final class VendorLookupRequested extends VendorEvent {
 final class VendorRecentLookupsRequested extends VendorEvent {
   const VendorRecentLookupsRequested();
 }
+
+final class VendorLocalIpDetectionRequested extends VendorEvent {
+  const VendorLocalIpDetectionRequested();
+}

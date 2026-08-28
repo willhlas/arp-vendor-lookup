@@ -6,6 +6,7 @@ import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
 
 void main() {
   final arpResolver = createArpResolver();
+  const localNetworkInfo = SystemLocalNetworkInfo();
   final vendorApiClient = VendorApiClient(
     baseUrl: 'http://localhost:3000',
   );
@@ -14,5 +15,10 @@ void main() {
     vendorApiClient: vendorApiClient,
   );
 
-  runApp(App(vendorLookupRepository: vendorLookupRepository));
+  runApp(
+    App(
+      vendorLookupRepository: vendorLookupRepository,
+      localNetworkInfo: localNetworkInfo,
+    ),
+  );
 }

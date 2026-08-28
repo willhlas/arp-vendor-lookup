@@ -6,11 +6,13 @@ class LookupFormCard extends StatelessWidget {
   const LookupFormCard({
     required this.controller,
     required this.onSubmit,
+    required this.onUseMyIp,
     super.key,
   });
 
   final TextEditingController controller;
   final VoidCallback onSubmit;
+  final VoidCallback onUseMyIp;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +26,27 @@ class LookupFormCard extends StatelessWidget {
         children: [
           Text(l10n.lookupFormHeading, style: theme.textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
-          Text(
-            l10n.ipAddressLabel.toUpperCase(),
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.4,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.ipAddressLabel.toUpperCase(),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.4,
+                ),
+              ),
+              TextButton(
+                onPressed: onUseMyIp,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(l10n.useMyIpLabel),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.xs),
           Row(

@@ -1,3 +1,4 @@
+import 'package:arp_vendor_lookup/l10n/l10n.dart';
 import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,19 +37,53 @@ void main() {
       expect(find.byType(LookupLoadingCard), findsOneWidget);
     });
 
-    testWidgets('renders LookupErrorCard when error', (tester) async {
-      when(() => vendorBloc.state).thenReturn(
-        const VendorState(
-          lookupStatus: VendorLookupStatus.error,
-          lookupErrorMessage: 'boom',
-        ),
-      );
+    for (final kind in VendorLookupErrorKind.values) {
+      testWidgets('renders LookupErrorCard with a specific body for $kind', (
+        tester,
+      ) async {
+        when(() => vendorBloc.state).thenReturn(
+          VendorState(
+            lookupStatus: VendorLookupStatus.error,
+            lookupErrorMessage: 'boom',
+            lookupErrorKind: kind,
+          ),
+        );
 
-      await tester.pumpApp(const LookupResultSection(), vendorBloc: vendorBloc);
+        await tester.pumpApp(
+          const LookupResultSection(),
+          vendorBloc: vendorBloc,
+        );
 
-      expect(find.byType(LookupErrorCard), findsOneWidget);
-      expect(find.text('boom'), findsOneWidget);
-    });
+        final context = tester.element(find.byType(LookupResultSection));
+        final l10n = context.l10n;
+
+        expect(find.byType(LookupErrorCard), findsOneWidget);
+        expect(find.text(lookupErrorBody(l10n, kind)), findsOneWidget);
+      });
+    }
+
+    testWidgets(
+      'renders the fallback body when no error kind is classified',
+      (tester) async {
+        when(() => vendorBloc.state).thenReturn(
+          const VendorState(
+            lookupStatus: VendorLookupStatus.error,
+            lookupErrorMessage: 'boom',
+          ),
+        );
+
+        await tester.pumpApp(
+          const LookupResultSection(),
+          vendorBloc: vendorBloc,
+        );
+
+        final context = tester.element(find.byType(LookupResultSection));
+        final l10n = context.l10n;
+
+        expect(find.byType(LookupErrorCard), findsOneWidget);
+        expect(find.text(lookupErrorBody(l10n, null)), findsOneWidget);
+      },
+    );
 
     testWidgets('renders LookupArpMissCard on an ARP miss', (tester) async {
       when(() => vendorBloc.state).thenReturn(

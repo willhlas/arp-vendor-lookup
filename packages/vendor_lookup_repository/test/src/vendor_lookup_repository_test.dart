@@ -124,6 +124,8 @@ void main() {
     for (final failure in [
       const InvalidMacFailure('bad mac'),
       const UpstreamLookupFailure('upstream broke'),
+      const UpstreamUnavailableFailure('upstream unreachable'),
+      const RateLimitedFailure('rate limited'),
       const NetworkFailure('unreachable'),
       const UnexpectedResponseFailure(500, 'unexpected'),
     ]) {

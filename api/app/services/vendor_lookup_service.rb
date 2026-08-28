@@ -5,6 +5,9 @@ class VendorLookupService
   class Error < StandardError; end
   class InvalidMacError < Error; end
   class UpstreamError < Error; end
+  class UpstreamUnavailableError < UpstreamError; end
+  class UpstreamBadResponseError < UpstreamError; end
+  class UpstreamRateLimitedError < UpstreamBadResponseError; end
 
   ENDPOINT = "https://www.macvendorlookup.com/api/v2/%s"
 
@@ -25,6 +28,8 @@ class VendorLookupService
 
   def fetch_and_persist(mac)
     Lookup.create!(mac: mac, vendor_name: fetch_vendor_name(mac))
+  rescue ActiveRecord::RecordInvalid
+    Lookup.find_by!(mac: mac)
   end
 
   def fetch_vendor_name(mac)
@@ -32,10 +37,12 @@ class VendorLookupService
     case response
     when Net::HTTPNoContent then nil
     when Net::HTTPSuccess then parse_vendor_name(response.body)
-    else raise UpstreamError, "vendor lookup API returned #{response.code}"
+    when Net::HTTPTooManyRequests
+      raise UpstreamRateLimitedError, "vendor lookup API rate-limited us (429)"
+    else raise UpstreamBadResponseError, "vendor lookup API returned #{response.code}"
     end
-  rescue Timeout::Error, SocketError, SystemCallError => e
-    raise UpstreamError, "vendor lookup API unreachable: #{e.message}"
+  rescue Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError => e
+    raise UpstreamUnavailableError, "vendor lookup API unreachable: #{e.message}"
   end
 
   def http_get(mac)
@@ -48,6 +55,6 @@ class VendorLookupService
   def parse_vendor_name(body)
     JSON.parse(body).first.fetch("company")
   rescue JSON::ParserError, NoMethodError, KeyError => e
-    raise UpstreamError, "unexpected vendor lookup API response: #{e.message}"
+    raise UpstreamBadResponseError, "unexpected vendor lookup API response: #{e.message}"
   end
 end
