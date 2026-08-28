@@ -1,3 +1,4 @@
+import 'package:arp_resolver/arp_resolver.dart';
 import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,8 @@ import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
 
 class _MockVendorLookupRepository extends Mock
     implements VendorLookupRepository {}
+
+class _MockLocalNetworkInfo extends Mock implements LocalNetworkInfo {}
 
 void main() {
   group(VendorBloc, () {
@@ -41,11 +44,16 @@ void main() {
     );
 
     late VendorLookupRepository vendorLookupRepository;
+    late LocalNetworkInfo localNetworkInfo;
     late VendorBloc vendorBloc;
 
     setUp(() {
       vendorLookupRepository = _MockVendorLookupRepository();
-      vendorBloc = VendorBloc(vendorLookupRepository: vendorLookupRepository);
+      localNetworkInfo = _MockLocalNetworkInfo();
+      vendorBloc = VendorBloc(
+        vendorLookupRepository: vendorLookupRepository,
+        localNetworkInfo: localNetworkInfo,
+      );
 
       when(
         () => vendorLookupRepository.recentLookups(),
@@ -54,7 +62,10 @@ void main() {
 
     test('can be instantiated', () {
       expect(
-        VendorBloc(vendorLookupRepository: vendorLookupRepository),
+        VendorBloc(
+          vendorLookupRepository: vendorLookupRepository,
+          localNetworkInfo: localNetworkInfo,
+        ),
         isNotNull,
       );
     });
@@ -144,48 +155,94 @@ void main() {
         },
       );
 
-      blocTest<VendorBloc, VendorState>(
-        'emits [loading, error] when the repository throws ArpLookupFailure',
-        setUp: () {
-          when(
-            () => vendorLookupRepository.lookupByIp('192.168.1.1'),
-          ).thenThrow(const ArpLookupFailure('arp command failed', 'boom'));
-        },
-        build: () => vendorBloc,
-        act: (bloc) => bloc.add(const VendorLookupRequested('192.168.1.1')),
-        expect: () => [
-          const VendorState(
-            lookupStatus: VendorLookupStatus.loading,
+      for (final (failure, cause, expectedKind) in [
+        (
+          const ArpLookupFailure(
+            'arp command failed',
+            ArpCommandFailure('boom'),
           ),
-          const VendorState(
-            lookupStatus: VendorLookupStatus.error,
-            lookupErrorMessage: 'arp command failed',
+          'ArpCommandFailure',
+          VendorLookupErrorKind.arpCommandFailed,
+        ),
+        (
+          const ArpLookupFailure(
+            'arp output unparseable',
+            ArpParseFailure('boom'),
           ),
-        ],
-      );
-
-      blocTest<VendorBloc, VendorState>(
-        'emits [loading, error] when the repository throws '
-        'VendorApiLookupFailure',
-        setUp: () {
-          when(
-            () => vendorLookupRepository.lookupByIp('192.168.1.1'),
-          ).thenThrow(
-            const VendorApiLookupFailure('vendor api unreachable', 'boom'),
-          );
-        },
-        build: () => vendorBloc,
-        act: (bloc) => bloc.add(const VendorLookupRequested('192.168.1.1')),
-        expect: () => [
-          const VendorState(
-            lookupStatus: VendorLookupStatus.loading,
+          'ArpParseFailure',
+          VendorLookupErrorKind.arpOutputUnparseable,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'vendor api unreachable',
+            NetworkFailure('boom'),
           ),
-          const VendorState(
-            lookupStatus: VendorLookupStatus.error,
-            lookupErrorMessage: 'vendor api unreachable',
+          'NetworkFailure',
+          VendorLookupErrorKind.networkUnreachable,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'upstream unavailable',
+            UpstreamUnavailableFailure('boom'),
           ),
-        ],
-      );
+          'UpstreamUnavailableFailure',
+          VendorLookupErrorKind.upstreamUnavailable,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'upstream bad response',
+            UpstreamLookupFailure('boom'),
+          ),
+          'UpstreamLookupFailure',
+          VendorLookupErrorKind.upstreamBadResponse,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'rate limited',
+            RateLimitedFailure('boom'),
+          ),
+          'RateLimitedFailure',
+          VendorLookupErrorKind.rateLimited,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'invalid mac',
+            InvalidMacFailure('boom'),
+          ),
+          'InvalidMacFailure',
+          VendorLookupErrorKind.invalidMac,
+        ),
+        (
+          const VendorApiLookupFailure(
+            'unexpected response',
+            UnexpectedResponseFailure(500, 'boom'),
+          ),
+          'UnexpectedResponseFailure',
+          VendorLookupErrorKind.unexpectedResponse,
+        ),
+      ]) {
+        blocTest<VendorBloc, VendorState>(
+          'emits [loading, error] with kind $expectedKind when the '
+          'repository throws a failure caused by $cause',
+          setUp: () {
+            when(
+              () => vendorLookupRepository.lookupByIp('192.168.1.1'),
+            ).thenThrow(failure);
+          },
+          build: () => vendorBloc,
+          act: (bloc) => bloc.add(const VendorLookupRequested('192.168.1.1')),
+          expect: () => [
+            const VendorState(
+              lookupStatus: VendorLookupStatus.loading,
+            ),
+            VendorState(
+              lookupStatus: VendorLookupStatus.error,
+              lookupErrorMessage: failure.message,
+              lookupErrorKind: expectedKind,
+            ),
+          ],
+        );
+      }
 
       blocTest<VendorBloc, VendorState>(
         'emits a recentStatus error when recentLookups() throws',
@@ -201,6 +258,68 @@ void main() {
           const VendorState(
             recentStatus: RecentLookupsStatus.error,
             recentErrorMessage: 'could not fetch recent lookups',
+          ),
+        ],
+      );
+    });
+
+    group('on VendorLocalIpDetectionRequested', () {
+      blocTest<VendorBloc, VendorState>(
+        'emits [loading, success] with the detected ip',
+        setUp: () {
+          when(
+            localNetworkInfo.primaryIPv4Address,
+          ).thenAnswer((_) async => '192.168.1.50');
+        },
+        build: () => vendorBloc,
+        act: (bloc) => bloc.add(const VendorLocalIpDetectionRequested()),
+        expect: () => [
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.loading,
+          ),
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.success,
+            detectedLocalIp: '192.168.1.50',
+          ),
+        ],
+      );
+
+      blocTest<VendorBloc, VendorState>(
+        'emits [loading, error] when no active interface has an address',
+        setUp: () {
+          when(
+            localNetworkInfo.primaryIPv4Address,
+          ).thenAnswer((_) async => null);
+        },
+        build: () => vendorBloc,
+        act: (bloc) => bloc.add(const VendorLocalIpDetectionRequested()),
+        expect: () => [
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.loading,
+          ),
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.error,
+            localIpDetectionErrorMessage: 'no active network interface found',
+          ),
+        ],
+      );
+
+      blocTest<VendorBloc, VendorState>(
+        'emits [loading, error] when listing interfaces throws',
+        setUp: () {
+          when(localNetworkInfo.primaryIPv4Address).thenThrow(
+            const LocalNetworkInfoFailure('could not list interfaces'),
+          );
+        },
+        build: () => vendorBloc,
+        act: (bloc) => bloc.add(const VendorLocalIpDetectionRequested()),
+        expect: () => [
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.loading,
+          ),
+          const VendorState(
+            localIpDetectionStatus: LocalIpDetectionStatus.error,
+            localIpDetectionErrorMessage: 'could not list interfaces',
           ),
         ],
       );

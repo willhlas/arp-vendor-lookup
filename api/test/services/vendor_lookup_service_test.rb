@@ -9,7 +9,7 @@ class VendorLookupServiceTest < ActiveSupport::TestCase
 
   test "normalizes hyphenated lowercase input before querying" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
-      .to_return(status: 200, body: [{ "company" => "Example Vendor" }].to_json)
+      .to_return(status: 200, body: [ { "company" => "Example Vendor" } ].to_json)
 
     lookup = VendorLookupService.new("aa-bb-cc-dd-ee-ff").call
 
@@ -26,20 +26,55 @@ class VendorLookupServiceTest < ActiveSupport::TestCase
     assert_not lookup.found?
   end
 
-  test "raises UpstreamError on an unexpected status code" do
+  test "raises UpstreamBadResponseError on an unexpected status code" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 500, body: "")
 
-    assert_raises(VendorLookupService::UpstreamError) do
+    assert_raises(VendorLookupService::UpstreamBadResponseError) do
       VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
     end
   end
 
-  test "raises UpstreamError on malformed JSON" do
+  test "raises UpstreamBadResponseError on malformed JSON" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 200, body: "not json")
 
-    assert_raises(VendorLookupService::UpstreamError) do
+    assert_raises(VendorLookupService::UpstreamBadResponseError) do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
+    end
+  end
+
+  test "raises UpstreamRateLimitedError on a 429" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
+      .to_return(status: 429, body: "")
+
+    assert_raises(VendorLookupService::UpstreamRateLimitedError) do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
+    end
+  end
+
+  test "raises UpstreamUnavailableError on a timeout" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF").to_timeout
+
+    assert_raises(VendorLookupService::UpstreamUnavailableError) do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
+    end
+  end
+
+  test "raises UpstreamUnavailableError on a SocketError" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
+      .to_raise(SocketError)
+
+    assert_raises(VendorLookupService::UpstreamUnavailableError) do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
+    end
+  end
+
+  test "raises UpstreamUnavailableError on an SSL error" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
+      .to_raise(OpenSSL::SSL::SSLError)
+
+    assert_raises(VendorLookupService::UpstreamUnavailableError) do
       VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
     end
   end
@@ -50,5 +85,33 @@ class VendorLookupServiceTest < ActiveSupport::TestCase
     VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
 
     assert_not_requested :get, /macvendorlookup/
+  end
+
+  test "recovers from a concurrent create for the same mac" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
+      .to_return(status: 200, body: [ { "company" => "Example Vendor" } ].to_json)
+
+    lookup = with_racing_lookup_create do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF").call
+    end
+
+    assert_equal "Example Vendor", lookup.vendor_name
+    assert_equal 1, Lookup.where(mac: "AA:BB:CC:DD:EE:FF").count
+  end
+
+  private
+
+  # Simulates another request inserting the same mac between our find_by
+  # miss and our create!, by making create! itself perform that insert
+  # (via #save!, which isn't overridden) and then raise the same uniqueness
+  # error a real race would produce.
+  def with_racing_lookup_create
+    Lookup.define_singleton_method(:create!) do |mac:, vendor_name:|
+      Lookup.new(mac: mac, vendor_name: vendor_name).save!
+      raise ActiveRecord::RecordInvalid, Lookup.new
+    end
+    yield
+  ensure
+    Lookup.singleton_class.send(:remove_method, :create!)
   end
 end

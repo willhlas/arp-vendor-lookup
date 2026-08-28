@@ -19,7 +19,11 @@ void main() {
       tester,
     ) async {
       await tester.pumpApp(
-        LookupFormCard(controller: controller, onSubmit: () {}),
+        LookupFormCard(
+          controller: controller,
+          onSubmit: () {},
+          onUseMyIp: () {},
+        ),
       );
 
       final context = tester.element(find.byType(LookupFormCard));
@@ -28,6 +32,7 @@ void main() {
       expect(find.text(l10n.lookupFormHeading), findsOneWidget);
       expect(find.text(l10n.lookupHelperText), findsOneWidget);
       expect(find.text(l10n.lookupButtonLabel), findsOneWidget);
+      expect(find.text(l10n.useMyIpLabel), findsOneWidget);
     });
 
     testWidgets('invokes onSubmit when the button is tapped', (tester) async {
@@ -35,6 +40,7 @@ void main() {
         LookupFormCard(
           controller: controller,
           onSubmit: () => submitCount++,
+          onUseMyIp: () {},
         ),
       );
 
@@ -53,6 +59,7 @@ void main() {
         LookupFormCard(
           controller: controller,
           onSubmit: () => submitCount++,
+          onUseMyIp: () {},
         ),
       );
 
@@ -60,6 +67,24 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
 
       expect(submitCount, 1);
+    });
+
+    testWidgets('invokes onUseMyIp when the button is tapped', (tester) async {
+      var useMyIpCount = 0;
+      await tester.pumpApp(
+        LookupFormCard(
+          controller: controller,
+          onSubmit: () {},
+          onUseMyIp: () => useMyIpCount++,
+        ),
+      );
+
+      final context = tester.element(find.byType(LookupFormCard));
+      final l10n = context.l10n;
+
+      await tester.tap(find.text(l10n.useMyIpLabel));
+
+      expect(useMyIpCount, 1);
     });
   });
 }

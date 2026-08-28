@@ -215,6 +215,54 @@ abstract class AppLocalizations {
   /// **'Lookup failed'**
   String get lookupFailedTitle;
 
+  /// Body shown when the OS command used to read the ARP table could not be run.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the local ARP table. Check that the arp command is available and try again.'**
+  String get lookupErrorArpCommandFailedBody;
+
+  /// Body shown when the ARP command ran but its output could not be parsed.
+  ///
+  /// In en, this message translates to:
+  /// **'The local ARP table\'s output could not be understood.'**
+  String get lookupErrorArpUnparseableBody;
+
+  /// Body shown when the app's own call to the vendor lookup API never got a response.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the vendor lookup API. Check your connection and try again.'**
+  String get lookupErrorNetworkUnreachableBody;
+
+  /// Body shown when the vendor lookup API responded but its own upstream was unreachable (503).
+  ///
+  /// In en, this message translates to:
+  /// **'The vendor lookup API could not reach its upstream data source. Try again shortly.'**
+  String get lookupErrorUpstreamUnavailableBody;
+
+  /// Body shown when the vendor lookup API's upstream responded, but badly (502).
+  ///
+  /// In en, this message translates to:
+  /// **'The vendor lookup API returned an unexpected response. Try again shortly.'**
+  String get lookupErrorUpstreamBadResponseBody;
+
+  /// Body shown when the vendor lookup API's upstream rate-limited it (429).
+  ///
+  /// In en, this message translates to:
+  /// **'The vendor lookup API is being rate-limited. Wait a moment before trying again.'**
+  String get lookupErrorRateLimitedBody;
+
+  /// Body shown when the vendor lookup API rejected the MAC address as malformed (422).
+  ///
+  /// In en, this message translates to:
+  /// **'The resolved MAC address was rejected as malformed by the vendor lookup API.'**
+  String get lookupErrorInvalidMacBody;
+
+  /// Fallback body shown for an unrecognized or unclassified lookup failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Something unexpected went wrong. Try again.'**
+  String get lookupErrorUnexpectedBody;
+
   /// Title shown when the entered text is not a valid IPv4 address.
   ///
   /// In en, this message translates to:
@@ -226,6 +274,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'\"{value}\" is not a valid IPv4 address. Check the format and try again.'**
   String invalidIpBody(String value);
+
+  /// Label for the button that detects and fills in the device's own primary IP address.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my IP'**
+  String get useMyIpLabel;
+
+  /// Title shown when auto-detecting the device's own IP address fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not detect your IP'**
+  String get localIpDetectionErrorTitle;
+
+  /// Body shown when auto-detecting the device's own IP address fails or finds nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No active network interface with an IP address was found on this device.'**
+  String get localIpDetectionErrorBody;
 
   /// Heading of the recent lookups panel.
   ///

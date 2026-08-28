@@ -1,4 +1,5 @@
 import 'package:app_ui/app_ui.dart';
+import 'package:arp_resolver/arp_resolver.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
 import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +9,21 @@ import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
 class App extends StatelessWidget {
   const App({
     required this.vendorLookupRepository,
+    required this.localNetworkInfo,
     super.key,
   });
 
   final VendorLookupRepository vendorLookupRepository;
+  final LocalNetworkInfo localNetworkInfo;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          VendorBloc(vendorLookupRepository: vendorLookupRepository)
+          VendorBloc(
+              vendorLookupRepository: vendorLookupRepository,
+              localNetworkInfo: localNetworkInfo,
+            )
             ..add(const VendorRecentLookupsRequested()),
       child: const AppView(),
     );

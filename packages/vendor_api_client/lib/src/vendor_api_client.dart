@@ -24,8 +24,12 @@ class VendorApiClient {
         return _decodeLookup(response);
       case 422:
         throw InvalidMacFailure(_decodeErrorMessage(response));
+      case 429:
+        throw RateLimitedFailure(_decodeErrorMessage(response));
       case 502:
         throw UpstreamLookupFailure(_decodeErrorMessage(response));
+      case 503:
+        throw UpstreamUnavailableFailure(_decodeErrorMessage(response));
       default:
         throw UnexpectedResponseFailure(
           response.statusCode,

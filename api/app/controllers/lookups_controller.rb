@@ -1,9 +1,9 @@
 class LookupsController < ApplicationController
   def index
-    if params[:mac].present?
-      lookup_by_mac
-    else
+    if params[:mac].nil?
       recent_lookups
+    else
+      lookup_by_mac
     end
   end
 
@@ -14,7 +14,11 @@ class LookupsController < ApplicationController
     render json: lookup, status: lookup.found? ? :ok : :not_found
   rescue VendorLookupService::InvalidMacError => e
     render json: { error: e.message }, status: :unprocessable_entity
-  rescue VendorLookupService::UpstreamError => e
+  rescue VendorLookupService::UpstreamRateLimitedError => e
+    render json: { error: e.message }, status: :too_many_requests
+  rescue VendorLookupService::UpstreamUnavailableError => e
+    render json: { error: e.message }, status: :service_unavailable
+  rescue VendorLookupService::UpstreamBadResponseError => e
     render json: { error: e.message }, status: :bad_gateway
   end
 

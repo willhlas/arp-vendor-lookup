@@ -80,6 +80,38 @@
   "@lookupFailedTitle": {
     "description": "Generic title for a failed lookup, regardless of the underlying cause."
   },
+  "lookupErrorArpCommandFailedBody": "Could not read the local ARP table. Check that the arp command is available and try again.",
+  "@lookupErrorArpCommandFailedBody": {
+    "description": "Body shown when the OS command used to read the ARP table could not be run."
+  },
+  "lookupErrorArpUnparseableBody": "The local ARP table's output could not be understood.",
+  "@lookupErrorArpUnparseableBody": {
+    "description": "Body shown when the ARP command ran but its output could not be parsed."
+  },
+  "lookupErrorNetworkUnreachableBody": "Could not reach the vendor lookup API. Check your connection and try again.",
+  "@lookupErrorNetworkUnreachableBody": {
+    "description": "Body shown when the app's own call to the vendor lookup API never got a response."
+  },
+  "lookupErrorUpstreamUnavailableBody": "The vendor lookup API could not reach its upstream data source. Try again shortly.",
+  "@lookupErrorUpstreamUnavailableBody": {
+    "description": "Body shown when the vendor lookup API responded but its own upstream was unreachable (503)."
+  },
+  "lookupErrorUpstreamBadResponseBody": "The vendor lookup API returned an unexpected response. Try again shortly.",
+  "@lookupErrorUpstreamBadResponseBody": {
+    "description": "Body shown when the vendor lookup API's upstream responded, but badly (502)."
+  },
+  "lookupErrorRateLimitedBody": "The vendor lookup API is being rate-limited. Wait a moment before trying again.",
+  "@lookupErrorRateLimitedBody": {
+    "description": "Body shown when the vendor lookup API's upstream rate-limited it (429)."
+  },
+  "lookupErrorInvalidMacBody": "The resolved MAC address was rejected as malformed by the vendor lookup API.",
+  "@lookupErrorInvalidMacBody": {
+    "description": "Body shown when the vendor lookup API rejected the MAC address as malformed (422)."
+  },
+  "lookupErrorUnexpectedBody": "Something unexpected went wrong. Try again.",
+  "@lookupErrorUnexpectedBody": {
+    "description": "Fallback body shown for an unrecognized or unclassified lookup failure."
+  },
   "invalidIpTitle": "Invalid IP address",
   "@invalidIpTitle": {
     "description": "Title shown when the entered text is not a valid IPv4 address."
@@ -93,6 +125,18 @@
         "example": "999.1.1.1"
       }
     }
+  },
+  "useMyIpLabel": "Use my IP",
+  "@useMyIpLabel": {
+    "description": "Label for the button that detects and fills in the device's own primary IP address."
+  },
+  "localIpDetectionErrorTitle": "Could not detect your IP",
+  "@localIpDetectionErrorTitle": {
+    "description": "Title shown when auto-detecting the device's own IP address fails."
+  },
+  "localIpDetectionErrorBody": "No active network interface with an IP address was found on this device.",
+  "@localIpDetectionErrorBody": {
+    "description": "Body shown when auto-detecting the device's own IP address fails or finds nothing."
   },
   "recentLookupsHeading": "Recent lookups",
   "@recentLookupsHeading": {

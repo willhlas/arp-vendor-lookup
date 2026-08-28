@@ -25,6 +25,20 @@ final class NetworkFailure extends VendorApiException {
   const NetworkFailure(super.message);
 }
 
+/// The API responded, but it could not reach its own upstream at all —
+/// a network-level failure on the API's side (HTTP 503). Distinct from
+/// [UpstreamLookupFailure] (the API's upstream responded, just badly) and
+/// [NetworkFailure] (our own call to the API never got a response at all).
+final class UpstreamUnavailableFailure extends VendorApiException {
+  const UpstreamUnavailableFailure(super.message);
+}
+
+/// The API itself was rate-limited by its upstream and is passing that
+/// back to us (HTTP 429).
+final class RateLimitedFailure extends VendorApiException {
+  const RateLimitedFailure(super.message);
+}
+
 /// The API returned a response this client doesn't know how to interpret:
 /// an unexpected status code, or a body that isn't valid/expected JSON.
 final class UnexpectedResponseFailure extends VendorApiException {

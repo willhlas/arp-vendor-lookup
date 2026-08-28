@@ -1,5 +1,6 @@
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
 import 'package:arp_vendor_lookup/vendor/bloc/vendor_bloc.dart';
+import 'package:arp_vendor_lookup/vendor/util/util.dart';
 import 'package:arp_vendor_lookup/vendor/widgets/lookup_arp_miss_card.dart';
 import 'package:arp_vendor_lookup/vendor/widgets/lookup_empty_card.dart';
 import 'package:arp_vendor_lookup/vendor/widgets/lookup_error_card.dart';
@@ -24,12 +25,12 @@ class LookupResultSection extends StatelessWidget {
       case VendorLookupStatus.loading:
         return const LookupLoadingCard();
       case VendorLookupStatus.error:
-        final errorMessage = context.select<VendorBloc, String?>(
-          (bloc) => bloc.state.lookupErrorMessage,
+        final errorKind = context.select<VendorBloc, VendorLookupErrorKind?>(
+          (bloc) => bloc.state.lookupErrorKind,
         );
         return LookupErrorCard(
           title: context.l10n.lookupFailedTitle,
-          body: errorMessage ?? '',
+          body: lookupErrorBody(context.l10n, errorKind),
         );
       case VendorLookupStatus.success:
         final isArpMiss = context.select<VendorBloc, bool>(

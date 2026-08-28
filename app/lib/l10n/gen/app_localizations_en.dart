@@ -72,12 +72,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lookupFailedTitle => 'Lookup failed';
 
   @override
+  String get lookupErrorArpCommandFailedBody => 'Could not read the local ARP table. Check that the arp command is available and try again.';
+
+  @override
+  String get lookupErrorArpUnparseableBody => 'The local ARP table\'s output could not be understood.';
+
+  @override
+  String get lookupErrorNetworkUnreachableBody => 'Could not reach the vendor lookup API. Check your connection and try again.';
+
+  @override
+  String get lookupErrorUpstreamUnavailableBody => 'The vendor lookup API could not reach its upstream data source. Try again shortly.';
+
+  @override
+  String get lookupErrorUpstreamBadResponseBody => 'The vendor lookup API returned an unexpected response. Try again shortly.';
+
+  @override
+  String get lookupErrorRateLimitedBody => 'The vendor lookup API is being rate-limited. Wait a moment before trying again.';
+
+  @override
+  String get lookupErrorInvalidMacBody => 'The resolved MAC address was rejected as malformed by the vendor lookup API.';
+
+  @override
+  String get lookupErrorUnexpectedBody => 'Something unexpected went wrong. Try again.';
+
+  @override
   String get invalidIpTitle => 'Invalid IP address';
 
   @override
   String invalidIpBody(String value) {
     return '\"$value\" is not a valid IPv4 address. Check the format and try again.';
   }
+
+  @override
+  String get useMyIpLabel => 'Use my IP';
+
+  @override
+  String get localIpDetectionErrorTitle => 'Could not detect your IP';
+
+  @override
+  String get localIpDetectionErrorBody => 'No active network interface with an IP address was found on this device.';
 
   @override
   String get recentLookupsHeading => 'Recent lookups';

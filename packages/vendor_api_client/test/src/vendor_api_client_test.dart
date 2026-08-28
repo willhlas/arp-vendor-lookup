@@ -116,6 +116,45 @@ void main() {
       },
     );
 
+    test('429 throws RateLimitedFailure with the error message', () async {
+      stubGet(
+        jsonEncode({'error': 'vendor lookup API rate-limited us (429)'}),
+        429,
+      );
+
+      expect(
+        () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+        throwsA(
+          isA<RateLimitedFailure>().having(
+            (e) => e.message,
+            'message',
+            'vendor lookup API rate-limited us (429)',
+          ),
+        ),
+      );
+    });
+
+    test(
+      '503 throws UpstreamUnavailableFailure with the error message',
+      () async {
+        stubGet(
+          jsonEncode({'error': 'vendor lookup API unreachable: timeout'}),
+          503,
+        );
+
+        expect(
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          throwsA(
+            isA<UpstreamUnavailableFailure>().having(
+              (e) => e.message,
+              'message',
+              'vendor lookup API unreachable: timeout',
+            ),
+          ),
+        );
+      },
+    );
+
     test('a network error throws NetworkFailure', () async {
       when(
         () => httpClient.get(any()),
