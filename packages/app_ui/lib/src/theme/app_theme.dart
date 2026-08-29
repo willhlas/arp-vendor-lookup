@@ -1,5 +1,4 @@
-import 'package:app_ui/src/theme/colors/app_colors.dart';
-import 'package:app_ui/src/theme/typography/app_text_styles.dart';
+import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -21,9 +20,13 @@ class AppTheme {
           backgroundColor: AppColors.accent,
           foregroundColor: Colors.white,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: BorderRadius.all(Radius.circular(AppRadius.sm)),
           ),
         ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.divider,
+        thickness: 1,
       ),
     );
   }
@@ -31,4 +34,6 @@ class AppTheme {
 
 extension BuildContextX on BuildContext {
   ThemeData get theme => Theme.of(this);
+
+  TextTheme get textTheme => theme.textTheme;
 }

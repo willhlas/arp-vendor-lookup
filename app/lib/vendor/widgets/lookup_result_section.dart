@@ -1,12 +1,5 @@
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/bloc/vendor_bloc.dart';
-import 'package:arp_vendor_lookup/vendor/util/util.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_arp_miss_card.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_empty_card.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_error_card.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_loading_card.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_resolved_card.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/lookup_unknown_vendor_card.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

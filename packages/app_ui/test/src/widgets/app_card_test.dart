@@ -24,9 +24,8 @@ void main() {
         ),
       );
 
-      final container = tester.widget<Container>(find.byType(Container));
-      final decoration = container.decoration! as BoxDecoration;
-      expect(decoration.color, AppColors.errorBackground);
+      final widget = tester.widget<Material>(find.byType(Material));
+      expect(widget.color, AppColors.errorBackground);
     });
   });
 }

@@ -1,5 +1,5 @@
 import 'package:app_ui/src/theme/theme.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class AppLabelValueRow extends StatelessWidget {
   const AppLabelValueRow({
@@ -15,27 +15,31 @@ class AppLabelValueRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = context.textTheme;
+
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               label.toUpperCase(),
-              style: AppTextStyles.textTheme.labelMedium?.copyWith(
+              style: textTheme.labelMedium?.copyWith(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
                 letterSpacing: 0.4,
               ),
             ),
-            value,
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Align(alignment: Alignment.centerRight, child: value),
+            ),
           ],
         ),
-        if (showDivider) ...[
-          const SizedBox(height: 14),
-          Container(height: 1, color: AppColors.divider),
-          const SizedBox(height: 14),
+        if (showDivider) ...const [
+          SizedBox(height: AppSpacing.sm),
+          Divider(),
+          SizedBox(height: AppSpacing.sm),
         ],
       ],
     );

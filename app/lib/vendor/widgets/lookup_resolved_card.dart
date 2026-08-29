@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/bloc/vendor_bloc.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
@@ -11,7 +11,7 @@ class LookupResolvedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     final result = context.select<VendorBloc, VendorLookupResult?>(
       (bloc) => bloc.state.result,
@@ -24,9 +24,16 @@ class LookupResolvedCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.resultHeading, style: theme.textTheme.titleMedium),
+              Expanded(
+                child: Text(
+                  l10n.resultHeading,
+                  style: textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
               AppBadge(
                 label: l10n.resolvedBadgeLabel,
                 variant: AppBadgeVariant.success,
@@ -46,7 +53,6 @@ class LookupResolvedCard extends StatelessWidget {
             label: l10n.vendorRowLabel,
             showDivider: false,
             value: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 22,
@@ -57,10 +63,14 @@ class LookupResolvedCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
-                Text(
-                  vendorName,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary,
+                Expanded(
+                  child: Text(
+                    vendorName,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: textTheme.titleSmall?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ],

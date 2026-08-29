@@ -13,7 +13,7 @@ class LookupErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     return AppCard(
       variant: AppCardVariant.error,
@@ -45,14 +45,14 @@ class LookupErrorCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: textTheme.titleSmall?.copyWith(
                     color: AppColors.errorTitle,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   body,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.errorBody,
                   ),
                 ),

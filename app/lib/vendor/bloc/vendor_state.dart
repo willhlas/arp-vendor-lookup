@@ -36,11 +36,9 @@ class VendorState extends Equatable {
   final VendorLookupResult? result;
   final String? lookupErrorMessage;
   final VendorLookupErrorKind? lookupErrorKind;
-
   final RecentLookupsStatus recentStatus;
   final List<Lookup> recentLookups;
   final String? recentErrorMessage;
-
   final LocalIpDetectionStatus localIpDetectionStatus;
   final String? detectedLocalIp;
   final String? localIpDetectionErrorMessage;

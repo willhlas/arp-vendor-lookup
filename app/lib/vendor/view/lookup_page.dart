@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/view/lookup_view.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 
 class LookupPage extends StatelessWidget {
@@ -11,26 +11,65 @@ class LookupPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1440),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.xxl,
-                vertical: AppSpacing.xl,
-              ),
-              child: Column(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xxl,
+            vertical: AppSpacing.xl,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1440),
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _LookupHeader(),
                   SizedBox(height: AppSpacing.xl),
-                  Expanded(child: LookupView()),
+                  _LookupContent(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LookupContent extends StatelessWidget {
+  const _LookupContent();
+
+  static const double _wideLayoutBreakpoint = 900;
+  static const double _recentLookupsPanelHeight = 420;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const recentLookupsPanel = SizedBox(
+          height: _recentLookupsPanelHeight,
+          child: RecentLookupsPanel(),
+        );
+
+        if (constraints.maxWidth >= _wideLayoutBreakpoint) {
+          return const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(width: 520, child: LookupSection()),
+              SizedBox(width: AppSpacing.xl),
+              Expanded(child: recentLookupsPanel),
+            ],
+          );
+        }
+
+        return const Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            LookupSection(),
+            SizedBox(height: AppSpacing.xl),
+            recentLookupsPanel,
+          ],
+        );
+      },
     );
   }
 }
@@ -42,46 +81,59 @@ class _LookupHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = context.theme;
+    final textTheme = theme.textTheme;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.accent,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              alignment: Alignment.center,
-              child: Container(
-                width: 16,
-                height: 16,
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2.5),
+                  color: AppColors.accent,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l10n.appTitle, style: theme.textTheme.titleLarge),
-                Text(
-                  l10n.appSubtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                alignment: Alignment.center,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.5),
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.appTitle,
+                      style: textTheme.titleLarge,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    Text(
+                      l10n.appSubtitle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: AppSpacing.md),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 8,
@@ -92,10 +144,14 @@ class _LookupHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: AppSpacing.xs),
-            Text(
-              l10n.apiConnectedLabel,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                l10n.apiConnectedLabel,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
           ],

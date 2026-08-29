@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/util/relative_time.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 import 'package:vendor_api_client/vendor_api_client.dart';
 
@@ -12,7 +12,7 @@ class RecentLookupRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
@@ -20,12 +20,24 @@ class RecentLookupRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(lookup.ip, style: AppTextStyles.mono(fontSize: 13)),
+            child: Text(
+              lookup.ip,
+              style: AppTextStyles.mono(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             flex: 2,
-            child: Text(lookup.mac, style: AppTextStyles.mono(fontSize: 13)),
+            child: Text(
+              lookup.mac,
+              style: AppTextStyles.mono(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             flex: 4,
             child: lookup.found
@@ -43,25 +55,31 @@ class RecentLookupRow extends StatelessWidget {
                       Expanded(
                         child: Text(
                           lookup.vendorName!,
-                          style: theme.textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                     ],
                   )
                 : Text(
                     l10n.unknownVendorRowText,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               formatRelativeTime(lookup.createdAt, l10n: l10n),
               textAlign: TextAlign.right,
-              style: theme.textTheme.bodySmall?.copyWith(
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
