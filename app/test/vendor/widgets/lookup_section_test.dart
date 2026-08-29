@@ -61,5 +61,21 @@ void main() {
       ).called(1);
       expect(find.text(l10n.invalidIpTitle), findsNothing);
     });
+
+    testWidgets('disables the lookup button while a lookup is loading', (
+      tester,
+    ) async {
+      when(() => vendorBloc.state).thenReturn(
+        const VendorState(lookupStatus: VendorLookupStatus.loading),
+      );
+
+      await tester.pumpApp(const LookupSection(), vendorBloc: vendorBloc);
+
+      final button = tester.widget<ElevatedButton>(
+        find.byType(ElevatedButton),
+      );
+
+      expect(button.onPressed, isNull);
+    });
   });
 }

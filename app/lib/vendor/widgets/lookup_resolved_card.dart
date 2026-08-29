@@ -53,6 +53,8 @@ class LookupResolvedCard extends StatelessWidget {
             label: l10n.vendorRowLabel,
             showDivider: false,
             value: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 22,
@@ -63,14 +65,12 @@ class LookupResolvedCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
-                Expanded(
-                  child: Text(
-                    vendorName,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: textTheme.titleSmall?.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                Text(
+                  vendorName,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: textTheme.titleSmall?.copyWith(
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
