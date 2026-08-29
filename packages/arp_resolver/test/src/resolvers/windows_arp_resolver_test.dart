@@ -89,4 +89,31 @@ void main() {
       expect(resolver.resolve('192.168.1.1'), throwsA(isA<ArpParseFailure>()));
     });
   });
+
+  group('parseArpOutput', () {
+    late String output;
+    late WindowsArpResolver resolver;
+
+    setUp(() {
+      output = _fixture('arp_a_windows.txt');
+      resolver = const WindowsArpResolver(runProcess: Process.run);
+    });
+
+    test('returns the entry for another resolved ip', () {
+      final entry = resolver.parseArpOutput(output, '192.168.1.121');
+
+      expect(
+        entry,
+        const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+      );
+    });
+
+    test('returns null for empty output', () {
+      final empty = _fixture('arp_a_windows_empty.txt');
+
+      final entry = resolver.parseArpOutput(empty, '192.168.1.1');
+
+      expect(entry, isNull);
+    });
+  });
 }

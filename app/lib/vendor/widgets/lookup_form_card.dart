@@ -17,26 +17,30 @@ class LookupFormCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(l10n.lookupFormHeading, style: theme.textTheme.titleMedium),
+          Text(l10n.lookupFormHeading, style: textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.ipAddressLabel.toUpperCase(),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.4,
+              Expanded(
+                child: Text(
+                  l10n.ipAddressLabel.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               TextButton(
                 onPressed: onUseMyIp,
                 style: TextButton.styleFrom(
@@ -96,7 +100,7 @@ class LookupFormCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.lookupHelperText,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),

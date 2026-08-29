@@ -19,12 +19,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          VendorBloc(
-              vendorLookupRepository: vendorLookupRepository,
-              localNetworkInfo: localNetworkInfo,
-            )
-            ..add(const VendorRecentLookupsRequested()),
+      create: (_) => VendorBloc(
+        vendorLookupRepository: vendorLookupRepository,
+        localNetworkInfo: localNetworkInfo,
+      )..add(const VendorRecentLookupsRequested()),
       child: const AppView(),
     );
   }

@@ -11,6 +11,8 @@ const List<Color> _vendorSwatchPalette = [
 
 /// Deterministically maps a vendor name to one of a small fixed palette of
 /// colors, so the same vendor always gets the same swatch color.
+///
+/// A fancy thing Claude did.
 Color vendorSwatchColor(String seed) {
   final index =
       seed.codeUnits.fold<int>(0, (sum, unit) => sum + unit) %

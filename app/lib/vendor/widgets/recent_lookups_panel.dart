@@ -1,7 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/bloc/vendor_bloc.dart';
-import 'package:arp_vendor_lookup/vendor/widgets/recent_lookup_row.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_api_client/vendor_api_client.dart';
@@ -12,15 +11,14 @@ class RecentLookupsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     final status = context.select<VendorBloc, RecentLookupsStatus>(
       (bloc) => bloc.state.recentStatus,
     );
-    final recentLookups = context.select<VendorBloc, List<Lookup>>(
-      (bloc) => bloc.state.recentLookups,
+    final recentLookupsCount = context.select<VendorBloc, int>(
+      (bloc) => bloc.state.recentLookups.length,
     );
-    final count = recentLookups.length;
 
     return AppCard(
       child: Column(
@@ -31,33 +29,43 @@ class RecentLookupsPanel extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.recentLookupsHeading,
-                  style: theme.textTheme.titleMedium,
+                  style: textTheme.titleMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (status == RecentLookupsStatus.success)
+              if (status == RecentLookupsStatus.success) ...[
+                const SizedBox(width: AppSpacing.sm),
                 Text(
-                  l10n.recentLookupsCount(count),
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  l10n.recentLookupsCount(recentLookupsCount),
+                  style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
+              ],
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          Expanded(child: _buildBody(context, status, recentLookups)),
+          const Expanded(child: _RecentLookups()),
         ],
       ),
     );
   }
+}
 
-  Widget _buildBody(
-    BuildContext context,
-    RecentLookupsStatus status,
-    List<Lookup> recentLookups,
-  ) {
+class _RecentLookups extends StatelessWidget {
+  const _RecentLookups();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
+
+    final status = context.select<VendorBloc, RecentLookupsStatus>(
+      (bloc) => bloc.state.recentStatus,
+    );
+    final recentLookups = context.select<VendorBloc, List<Lookup>>(
+      (bloc) => bloc.state.recentLookups,
+    );
 
     switch (status) {
       case RecentLookupsStatus.initial:
@@ -65,7 +73,7 @@ class RecentLookupsPanel extends StatelessWidget {
         return Center(
           child: Text(
             l10n.recentLookupsLoading,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
@@ -74,7 +82,7 @@ class RecentLookupsPanel extends StatelessWidget {
         return Center(
           child: Text(
             l10n.recentLookupsError,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
@@ -84,7 +92,7 @@ class RecentLookupsPanel extends StatelessWidget {
           return Center(
             child: Text(
               l10n.recentLookupsEmpty,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textMuted,
               ),
             ),
@@ -93,7 +101,7 @@ class RecentLookupsPanel extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _ColumnHeaderRow(l10n: l10n, theme: theme),
+            const _ColumnHeaderRow(),
             Expanded(
               child: ListView.builder(
                 itemCount: recentLookups.length,
@@ -109,14 +117,14 @@ class RecentLookupsPanel extends StatelessWidget {
 }
 
 class _ColumnHeaderRow extends StatelessWidget {
-  const _ColumnHeaderRow({required this.l10n, required this.theme});
-
-  final AppLocalizations l10n;
-  final ThemeData theme;
+  const _ColumnHeaderRow();
 
   @override
   Widget build(BuildContext context) {
-    final style = theme.textTheme.labelSmall?.copyWith(
+    final l10n = context.l10n;
+    final textTheme = context.textTheme;
+
+    final style = textTheme.labelSmall?.copyWith(
       color: AppColors.textSecondary,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.3,
@@ -133,21 +141,41 @@ class _ColumnHeaderRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(l10n.ipColumnHeader.toUpperCase(), style: style),
+            child: Text(
+              l10n.ipColumnHeader.toUpperCase(),
+              style: style,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             flex: 2,
-            child: Text(l10n.macColumnHeader.toUpperCase(), style: style),
+            child: Text(
+              l10n.macColumnHeader.toUpperCase(),
+              style: style,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             flex: 4,
-            child: Text(l10n.vendorColumnHeader.toUpperCase(), style: style),
+            child: Text(
+              l10n.vendorColumnHeader.toUpperCase(),
+              style: style,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               l10n.timeColumnHeader.toUpperCase(),
               textAlign: TextAlign.right,
               style: style,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],

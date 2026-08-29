@@ -1,44 +1,62 @@
 import 'package:app_ui/src/theme/theme.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 enum AppBadgeVariant { success, warning, error, neutral }
 
 class AppBadge extends StatelessWidget {
-  const AppBadge({required this.label, required this.variant, super.key});
+  const AppBadge({
+    required this.label,
+    required this.variant,
+    super.key,
+  });
 
   final String label;
   final AppBadgeVariant variant;
 
   @override
   Widget build(BuildContext context) {
-    final (background, foreground) = switch (variant) {
-      AppBadgeVariant.success => (
-        AppColors.successBackground,
-        AppColors.success,
-      ),
-      AppBadgeVariant.warning => (
-        AppColors.warningBackground,
-        AppColors.warning,
-      ),
-      AppBadgeVariant.error => (AppColors.errorBackground, AppColors.error),
-      AppBadgeVariant.neutral => (AppColors.hoverFill, AppColors.textSecondary),
-    };
+    final textTheme = context.textTheme;
+    final colors = variant.colors;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        label.toUpperCase(),
-        style: AppTextStyles.textTheme.labelSmall?.copyWith(
-          fontSize: 11.5,
-          fontWeight: FontWeight.w600,
-          color: foreground,
-          letterSpacing: 0.3,
+    return Material(
+      color: colors.background,
+      borderRadius: BorderRadius.circular(AppRadius.pill),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xxs,
+        ),
+        child: Text(
+          label.toUpperCase(),
+          style: textTheme.labelSmall?.copyWith(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w600,
+            color: colors.foreground,
+            letterSpacing: 0.3,
+          ),
         ),
       ),
     );
   }
+}
+
+extension on AppBadgeVariant {
+  ({Color background, Color foreground}) get colors => switch (this) {
+    AppBadgeVariant.success => (
+      background: AppColors.successBackground,
+      foreground: AppColors.success,
+    ),
+    AppBadgeVariant.warning => (
+      background: AppColors.warningBackground,
+      foreground: AppColors.warning,
+    ),
+    AppBadgeVariant.error => (
+      background: AppColors.errorBackground,
+      foreground: AppColors.error,
+    ),
+    AppBadgeVariant.neutral => (
+      background: AppColors.hoverFill,
+      foreground: AppColors.textSecondary,
+    ),
+  };
 }

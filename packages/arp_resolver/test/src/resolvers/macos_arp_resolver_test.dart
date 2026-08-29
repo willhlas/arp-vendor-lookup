@@ -89,4 +89,40 @@ void main() {
       expect(resolver.resolve('192.168.1.1'), throwsA(isA<ArpParseFailure>()));
     });
   });
+
+  group('parseArpOutput', () {
+    late String output;
+    late MacosArpResolver resolver;
+
+    setUp(() {
+      output = _fixture('arp_a_macos.txt');
+      resolver = const MacosArpResolver(runProcess: Process.run);
+    });
+
+    test('normalizes single-hex-digit octets for the matched ip', () {
+      final entry = resolver.parseArpOutput(output, '192.168.1.121');
+
+      expect(
+        entry,
+        const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+      );
+    });
+
+    test('parses a line whose leading token is a resolved hostname', () {
+      final entry = resolver.parseArpOutput(output, '224.0.0.251');
+
+      expect(
+        entry,
+        const ArpEntry(ip: '224.0.0.251', mac: '01:00:5e:00:00:fb'),
+      );
+    });
+
+    test('returns null for empty output', () {
+      final empty = _fixture('arp_a_macos_empty.txt');
+
+      final entry = resolver.parseArpOutput(empty, '192.168.1.1');
+
+      expect(entry, isNull);
+    });
+  });
 }

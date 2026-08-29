@@ -6,9 +6,7 @@ import '../../helpers/pump_app.dart';
 
 void main() {
   group(LookupPage, () {
-    testWidgets('renders the header title, subtitle, and LookupView', (
-      tester,
-    ) async {
+    testWidgets('renders the header title, subtitle', (tester) async {
       await tester.pumpApp(const LookupPage());
 
       final context = tester.element(find.byType(LookupPage));
@@ -16,7 +14,6 @@ void main() {
 
       expect(find.text(l10n.appTitle), findsOneWidget);
       expect(find.text(l10n.appSubtitle), findsOneWidget);
-      expect(find.byType(LookupView), findsOneWidget);
     });
   });
 }

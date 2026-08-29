@@ -24,9 +24,9 @@ class LookupLoadingCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.loadingStateText,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

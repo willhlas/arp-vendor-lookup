@@ -8,7 +8,7 @@ class LookupEmptyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = context.theme;
+    final textTheme = context.textTheme;
 
     return AppCard(
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 28),
@@ -21,14 +21,14 @@ class LookupEmptyCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.emptyStateTitle,
-            style: theme.textTheme.titleSmall?.copyWith(
+            style: textTheme.titleSmall?.copyWith(
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             l10n.emptyStateBody,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,

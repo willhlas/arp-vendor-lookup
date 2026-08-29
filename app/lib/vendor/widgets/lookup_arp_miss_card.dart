@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
-import 'package:arp_vendor_lookup/vendor/bloc/vendor_bloc.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
@@ -12,6 +12,7 @@ class LookupArpMissCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = context.theme;
+    final textTheme = theme.textTheme;
 
     final result = context.select<VendorBloc, VendorLookupResult?>(
       (bloc) => bloc.state.result,
@@ -23,9 +24,16 @@ class LookupArpMissCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.resultHeading, style: theme.textTheme.titleMedium),
+              Expanded(
+                child: Text(
+                  l10n.resultHeading,
+                  style: textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
               AppBadge(
                 label: l10n.noArpEntryBadgeLabel,
                 variant: AppBadgeVariant.warning,
@@ -40,7 +48,7 @@ class LookupArpMissCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.noArpEntryExplanation,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
