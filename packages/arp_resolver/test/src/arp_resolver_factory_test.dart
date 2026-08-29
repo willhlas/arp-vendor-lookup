@@ -1,4 +1,5 @@
 import 'package:arp_resolver/arp_resolver.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -6,31 +7,39 @@ void main() {
     test(
       'returns a MacosArpResolver on macOS',
       () {
-        final resolver = createArpResolver();
+        final platform = FakePlatform(operatingSystem: Platform.macOS);
+        final resolver = createArpResolver(platform: platform);
 
         expect(resolver, isA<MacosArpResolver>());
       },
-      testOn: 'mac-os',
     );
 
     test(
       'returns a LinuxArpResolver on Linux',
       () {
-        final resolver = createArpResolver();
+        final platform = FakePlatform(operatingSystem: Platform.linux);
+        final resolver = createArpResolver(platform: platform);
 
         expect(resolver, isA<LinuxArpResolver>());
       },
-      testOn: 'linux',
     );
 
     test(
       'returns a WindowsArpResolver on Windows',
       () {
-        final resolver = createArpResolver();
+        final platform = FakePlatform(operatingSystem: Platform.windows);
+        final resolver = createArpResolver(platform: platform);
 
         expect(resolver, isA<WindowsArpResolver>());
       },
-      testOn: 'windows',
     );
+
+    test('throws $UnsupportedError on unsupported platforms', () {
+      final platform = FakePlatform(operatingSystem: 'unsupported');
+      expect(
+        () => createArpResolver(platform: platform),
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
   });
 }
