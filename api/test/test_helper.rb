@@ -1,3 +1,15 @@
+require "simplecov"
+SimpleCov.start "rails" do
+  minimum_coverage 100
+
+  # Unused Rails scaffold with no custom code (see CLAUDE.md: this app has no
+  # background jobs or mailers). Excluded rather than relied on for coverage,
+  # since they're only loaded when `config.eager_load` is on, making them
+  # untracked and coverage-flaky outside of `CI=true` runs.
+  skip "app/jobs/application_job.rb"
+  skip "app/mailers/application_mailer.rb"
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
