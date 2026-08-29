@@ -52,4 +52,7 @@ end
 group :test do
   # Stub outbound HTTP calls in tests [https://github.com/bblimke/webmock]
   gem "webmock"
+
+  # Code coverage; enforces 100% line coverage from test/test_helper.rb [https://github.com/simplecov-ruby/simplecov]
+  gem "simplecov", "~> 1.1", require: false
 end
