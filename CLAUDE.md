@@ -9,10 +9,10 @@ name.
   ARP table to resolve it to a MAC address, then calls our Rails API to
   resolve that MAC to a vendor name. Displays IP, MAC, and vendor, with a
   "recent lookups" list.
-- **Rails API** — a small JSON API. `GET /lookups?mac=...` proxies a
-  public MAC-vendor lookup service, caches the result, and returns it.
-  `GET /lookups` returns recent lookups for the app's history view. No
-  authentication.
+- **Rails API** — a small JSON API. `GET /lookups?mac=...&ip=...` (both
+  params required) proxies a public MAC-vendor lookup service, caches the
+  result, and returns it. `GET /lookups` (no `mac`) returns recent lookups
+  for the app's history view. No authentication.
 
 The interesting complexity in this project is at the edges, not in the
 middle: parsing OS-specific ARP output, and handling a flaky/rate-limited
@@ -25,7 +25,7 @@ treat them accordingly (see Testing below).
 /app                       # Flutter desktop client
 /api                       # Rails JSON API
 /packages
-  /arp_resolver            # Pure Dart: reads/parses the local ARP table (per-OS)
+  /arp_resolver            # Pure Dart: reads/parses the local ARP table (per-OS) + local IP detection
   /vendor_api_client       # Pure Dart: HTTP client for our Rails API
   /vendor_lookup_repository # Pure Dart: caching/repository layer on top of vendor_api_client
   /app_ui                  # Flutter: shared widgets / design system
@@ -51,7 +51,10 @@ package):
   layer on top, wrapping failures in typed exceptions.
 - `arp_resolver` is also a data-layer package, not a pure-logic one — it
   does I/O via `dart:io` process calls (shelling out to read the ARP
-  table), so don't mistake it for an algorithm/solver package.
+  table), so don't mistake it for an algorithm/solver package. It also
+  owns local network-interface/IP detection (`LocalNetworkInfo`), used by
+  the "use my IP" feature — a second, related I/O concern alongside ARP
+  parsing, not just the ARP table itself.
 - `app_ui` is the design-system/presentational package.
 - No pure-logic package exists, and none is needed yet — this app has no
   algorithmic component. Don't add one speculatively (YAGNI).
@@ -63,13 +66,14 @@ package):
 `app` depends on all four `packages/*` as local (path) dependencies.
 Nothing in `packages/` should ever depend on `app`.
 
-Dart workspace tooling (native `pubspec.yaml` workspace resolution, or
-Melos if cross-package scripting is needed) links `app` and `packages/*`
-together — mixed Dart/Flutter packages in one workspace is supported by
-both. `api` is a standalone Rails app within the same repo — it doesn't
-participate in the Dart workspace. `arp_resolver`, `vendor_api_client`,
-and `vendor_lookup_repository` tests run via `dart test`; `app` and
-`app_ui` tests run via `flutter test`.
+`app` and `packages/*` are linked with ordinary local `path:` dependencies
+in each `pubspec.yaml` (e.g. `app_ui: path: ../packages/app_ui`) — there
+is no Melos and no native `pubspec.yaml` workspace resolution in this
+repo. Each package/app is `pub get`/tested independently. `api` is a
+standalone Rails app within the same repo — it doesn't participate in the
+Dart dependency graph at all. `arp_resolver`, `vendor_api_client`, and
+`vendor_lookup_repository` tests run via `dart test`; `app` and `app_ui`
+tests run via `flutter test`.
 
 ## Engineering principles (apply to both codebases)
 
@@ -139,14 +143,18 @@ notes or PR description).
   `add` events) rather than relying on a single upstream stream.
   Page-level blocs that map one upstream stream 1:1 use `emit.forEach`.
 - **Side effects.** Navigation and dialogs live in dedicated
-  `BlocListener` classes, never inline in a `builder`.
-- **Bloc-layer error handling.** Catch `on Exception catch (e)`, call
-  `addError`, and emit an error status. Guard async event handlers with
-  `if (isClosed) return;` before emitting after an `await`. This is a
-  different layer from the repository-layer error handling described
-  under Engineering principles below — repositories catch plain and
-  rethrow typed exceptions; blocs catch the typed exception and turn it
-  into UI state.
+  `BlocListener` classes, never inline in a `builder`. (`LookupSection`'s
+  inline `BlocListener`, used only to toggle local IP-detection-failure
+  UI state rather than navigate, is an accepted narrow exception to this
+  rule — see the Widgets note below.)
+- **Bloc-layer error handling.** Catch the specific typed exception
+  surfaced by the layer below (e.g. `VendorLookupRepositoryException`,
+  `LocalNetworkInfoException`), call `addError`, and emit an error status.
+  Guard async event handlers with `if (isClosed) return;` before emitting
+  after an `await`. This is a different layer from the repository-layer
+  error handling described under Engineering principles below —
+  repositories catch plain and rethrow typed exceptions; blocs catch that
+  typed exception and turn it into UI state.
 - **Widget structure: Page → View → Content.** `StatelessWidget` +
   composition — small private `_Name extends StatelessWidget` classes in
   the same file, not extracted build methods. Prefer
@@ -154,7 +162,15 @@ notes or PR description).
   feature in three layers: the Page wires providers (`BlocProvider`,
   `RepositoryProvider`), the View switches on `state.status`, and Content
   widgets compose the actual sections for a given status. All
-  user-facing strings go through the app's l10n mechanism.
+  user-facing strings go through the app's l10n mechanism. For a
+  single-feature app like this one, this three-layer split is fully
+  realized once at the app root (`App` wires providers, `AppView` builds
+  the `MaterialApp`) rather than duplicated per feature — the vendor/
+  lookup feature composes `LookupPage` + section widgets directly, which
+  is fine at this app's current size. `LookupSection` is also the one
+  accepted `StatefulWidget` in the feature code (it owns a
+  `TextEditingController`, which needs `State`) — everything else stays
+  `StatelessWidget`.
 - **Barrel files.** Every grouped directory exports via a same-named
   barrel file (e.g. `packages/arp_resolver/lib/arp_resolver.dart`).
   Consumers never reach past the barrel into individual `src/` files.
@@ -165,9 +181,11 @@ notes or PR description).
   Exception` with `final class YFailure extends XException` variants per
   failure mode. Catch real failures with plain `catch (e)` and rethrow
   wrapped in the typed failure class.
-- JSON-boundary models (anything crossing the Rails API or ARP-table
-  boundary) are `Equatable` + `json_serializable`. Purely in-memory
-  models are `Equatable` only.
+- JSON-boundary models (anything crossing the Rails API boundary, e.g.
+  `Lookup`) are `Equatable` + `json_serializable`. Models parsed from
+  non-JSON text (e.g. `ArpEntry`, parsed from raw `arp`/`ip neigh` output)
+  and purely in-memory models are `Equatable` only — there's no JSON to
+  serialize at that boundary.
 - Construct all repositories once at `app`'s entry point and provide them
   down via `RepositoryProvider` — no per-feature self-wiring. Resolve any
   required initial async state before the first frame rather than
@@ -202,17 +220,25 @@ size.
 - **Config and secrets** (the vendor API key/URL, if the chosen provider
   needs one) go through Rails credentials or environment variables —
   never hardcoded in a service class.
-- **Generated infrastructure not in scope is still present, but unused.**
-  `rails new api --api` scaffolds Solid Queue, Solid Cache, Solid Cable,
-  and Active Storage by default (Rails 8 new-app defaults, unrelated to
-  `--api`). This app has no background jobs, no caching layer, no
-  websockets, and no file uploads — those gems are currently still in the
-  Gemfile from the scaffold but aren't used anywhere, and removing them is
-  a separate cleanup that hasn't happened yet. Don't build a feature that
-  assumes they're gone, and don't add new code that leans on any of them
-  without a concrete need (YAGNI). Kamal deployment files may or may not
-  be present depending on whether a deploy target was decided at scaffold
-  time.
+- **Generated infrastructure not in scope is present and config-wired, but
+  functionally unused.** `rails new api --api` scaffolds Solid Queue,
+  Solid Cache, Solid Cable, and Active Storage by default (Rails 8
+  new-app defaults, unrelated to `--api`). Beyond just sitting in the
+  Gemfile, these are wired into `config/environments/production.rb`
+  (`cache_store`, `active_job.queue_adapter`), `config/cable.yml`,
+  `config/database.yml` (separate cache/queue/cable databases), and
+  `config/recurring.yml` — but no application/feature code actually
+  invokes any of them (no `Rails.cache` calls, no `ActiveJob` subclasses,
+  no channels, no attachments). This app has no background jobs, no
+  Rails-cache-backed caching, no websockets, and no file uploads — the
+  `/lookups?mac=...` caching described above is done entirely via the
+  `Lookup` ActiveRecord table itself (a unique index on `mac`, including
+  persisted not-found rows), not Solid Cache. Removing the unused
+  infrastructure is a separate cleanup that hasn't happened yet. Don't
+  build a feature that assumes it's gone, and don't add new code that
+  leans on any of it without a concrete need (YAGNI). Kamal deployment
+  files may or may not be present depending on whether a deploy target
+  was decided at scaffold time.
 
 ## Testing
 
@@ -226,10 +252,12 @@ break:
   most likely and least visible.
 - **Rails:** this app uses Rails' default Minitest setup (no `rspec-rails`
   gem) — integration tests under `api/test/integration` for both
-  endpoints, covering the full status code matrix (200, 404, 422,
-  502/503-equivalent for upstream failure). Stub outbound HTTP calls in
-  tests (e.g. WebMock) — the test suite should never depend on the real
-  vendor API being up.
+  endpoints, covering the full status code matrix (200, 404, 422, 429,
+  502/503 for upstream failure), plus a unit test suite for
+  `VendorLookupService` under `api/test/services` and for the `Lookup`
+  model's validations/`normalize_mac` under `api/test/models`. Stub
+  outbound HTTP calls in tests (e.g. WebMock) — the test suite should
+  never depend on the real vendor API being up.
 - **Flutter:** unit tests for each `ArpResolver` implementation against
   fixed sample output; widget tests for each UI state (loading, success,
   unknown vendor, ARP miss, network error) using a mocked API client.
@@ -247,12 +275,15 @@ break:
 ## API conventions (Rails)
 
 - Consistent JSON error shape across all failure responses, e.g.
-  `{ "error": "message" }`.
-- Status codes: `422` for a malformed/missing `mac` param, `404` when the
-  MAC is well-formed but no vendor is found, `502`/`503` when the
-  upstream vendor API itself is unreachable or erroring — these are
-  different failure modes and should stay distinguishable in the
-  response.
+  `{ "error": "message" }`. A generic 500 (`{"error": "unexpected server
+  error"}` via `ApplicationController`'s `rescue_from StandardError`) and
+  a catch-all 404 for unmatched routes (`ErrorsController`) use the same
+  shape as a last resort.
+- Status codes: `422` for a malformed/missing `mac` or `ip` param, `404`
+  when the MAC is well-formed but no vendor is found, `429` when the
+  upstream vendor API rate-limits us, `502`/`503` when the upstream vendor
+  API itself is erroring or unreachable — these are different failure
+  modes and should stay distinguishable in the response.
 - Normalize MAC address formatting (case, separators) before querying or
   storing, so equivalent inputs hit the same cached record.
 
@@ -261,9 +292,12 @@ break:
 - Run the relevant test suite before considering a change done —
   `flutter test` (and `dart test` for the pure-Dart packages) for the
   app, `bin/rails test` for the API, or `bin/ci` for the full Rails check
-  (rubocop, bundler-audit, brakeman, tests).
+  (`bin/setup`, rubocop, bundler-audit, brakeman, tests, then a
+  `db:seed:replant` in the test environment).
 - Prefer small, reviewable commits over one large change.
-- Ask before adding a new dependency (gem or pub package) rather than
-  reaching for one by default — this includes `flutter_bloc`/`bloc`,
-  `bloc_test`, `equatable`, and `json_serializable`/`build_runner` when
-  state management and models are first implemented.
+- `flutter_bloc`/`bloc`, `bloc_test`, `equatable`, and
+  `json_serializable`/`build_runner` are already added and in active use
+  across `app` and the three Dart data packages — state management and
+  models are already implemented, not a future milestone. Continue to ask
+  before adding any *new* dependency (gem or pub package) beyond this set
+  rather than reaching for one by default.

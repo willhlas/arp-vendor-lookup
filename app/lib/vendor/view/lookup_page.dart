@@ -85,76 +85,29 @@ class _LookupHeader extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(
-          child: Row(
+        const AppLogo(),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.accent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2.5),
-                  ),
-                ),
+              Text(
+                l10n.appTitle,
+                style: textTheme.titleLarge,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.appTitle,
-                      style: textTheme.titleLarge,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    Text(
-                      l10n.appSubtitle,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: AppColors.successDot,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.xs),
-            Flexible(
-              child: Text(
-                l10n.apiConnectedLabel,
+              Text(
+                l10n.appSubtitle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
