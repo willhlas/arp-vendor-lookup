@@ -45,6 +45,14 @@ Each `packages/*` and `app` is a standalone Dart/Flutter project — `pub
 get`/`flutter pub get` and test independently; there's no Melos or native
 pubspec workspace tying them together.
 
+### VS Code
+
+Open the repo root in VS Code and use **Run and Debug** — the
+[`.vscode/launch.json`](.vscode/launch.json) configs ("Run app + API
+(macOS)" / "(Linux)" / "(Windows)") start the Rails API in the
+background via a [`.vscode/tasks.json`](.vscode/tasks.json) task, then
+launch the Flutter app pointed at it.
+
 ## Testing
 
 | Suite | Command |
