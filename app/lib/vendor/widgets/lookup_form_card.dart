@@ -1,6 +1,8 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:arp_vendor_lookup/l10n/l10n.dart';
+import 'package:arp_vendor_lookup/vendor/vendor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LookupFormCard extends StatelessWidget {
   const LookupFormCard({
@@ -19,25 +21,23 @@ class LookupFormCard extends StatelessWidget {
     final l10n = context.l10n;
     final textTheme = context.textTheme;
 
+    final isLoading = context.select<VendorBloc, bool>(
+      (bloc) => bloc.state.lookupStatus == VendorLookupStatus.loading,
+    );
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(l10n.lookupFormHeading, style: textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               Expanded(
                 child: Text(
-                  l10n.ipAddressLabel.toUpperCase(),
+                  l10n.lookupFormHeading,
+                  style: textTheme.titleMedium,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.4,
-                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -52,50 +52,68 @@ class LookupFormCard extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.ipAddressLabel.toUpperCase(),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: textTheme.labelMedium?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.4,
+            ),
+          ),
           const SizedBox(height: AppSpacing.xs),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  onSubmitted: (_) => onSubmit(),
-                  style: AppTextStyles.mono(fontSize: 16),
-                  decoration: InputDecoration(
-                    hintText: l10n.ipAddressPlaceholder,
-                    filled: true,
-                    fillColor: AppColors.inputFill,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderStrong,
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    onSubmitted: isLoading ? null : (_) => onSubmit(),
+                    style: AppTextStyles.mono(fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: l10n.ipAddressPlaceholder,
+                      hintStyle: AppTextStyles.mono(
+                        fontSize: 16,
+                        color: AppColors.neutralSwatch,
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderStrong,
+                      filled: true,
+                      fillColor: AppColors.inputFill,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      borderSide: const BorderSide(
-                        color: AppColors.accent,
-                        width: 1.5,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderStrong,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderStrong,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        borderSide: const BorderSide(
+                          color: AppColors.accent,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              ElevatedButton(
-                onPressed: onSubmit,
-                child: Text(l10n.lookupButtonLabel),
-              ),
-            ],
+                const SizedBox(width: AppSpacing.sm),
+                ElevatedButton(
+                  onPressed: isLoading ? null : onSubmit,
+                  child: Text(l10n.lookupButtonLabel),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
