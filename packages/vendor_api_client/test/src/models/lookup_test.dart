@@ -24,12 +24,18 @@ void main() {
     test('fromJson decodes a full object with a vendor name', () {
       final lookup = Lookup.fromJson(foundJson);
 
-      expect(lookup.id, 1);
-      expect(lookup.mac, 'AA:BB:CC:DD:EE:FF');
-      expect(lookup.ip, '192.168.1.24');
-      expect(lookup.vendorName, 'Example Vendor');
-      expect(lookup.createdAt, DateTime.parse('2026-08-28T18:20:00.000Z'));
-      expect(lookup.updatedAt, DateTime.parse('2026-08-28T18:20:00.000Z'));
+      expect(lookup.id, equals(1));
+      expect(lookup.mac, equals('AA:BB:CC:DD:EE:FF'));
+      expect(lookup.ip, equals('192.168.1.24'));
+      expect(lookup.vendorName, equals('Example Vendor'));
+      expect(
+        lookup.createdAt,
+        equals(DateTime.parse('2026-08-28T18:20:00.000Z')),
+      );
+      expect(
+        lookup.updatedAt,
+        equals(DateTime.parse('2026-08-28T18:20:00.000Z')),
+      );
     });
 
     test('fromJson decodes a null vendor_name', () {
@@ -49,8 +55,8 @@ void main() {
     test('toJson round-trips to snake_case keys', () {
       final json = Lookup.fromJson(foundJson).toJson();
 
-      expect(json['ip'], '192.168.1.24');
-      expect(json['vendor_name'], 'Example Vendor');
+      expect(json['ip'], equals('192.168.1.24'));
+      expect(json['vendor_name'], equals('Example Vendor'));
       expect(json['created_at'], isA<String>());
       expect(json['updated_at'], isA<String>());
     });
