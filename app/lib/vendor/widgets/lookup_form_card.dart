@@ -16,6 +16,10 @@ class LookupFormCard extends StatelessWidget {
   final VoidCallback onSubmit;
   final VoidCallback onUseMyIp;
 
+  static const double _horizontalContentPadding = 14;
+  static const double _verticalContentPadding = 12;
+  static const double _ipFieldFontSize = 16;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -72,18 +76,18 @@ class LookupFormCard extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     onSubmitted: isLoading ? null : (_) => onSubmit(),
-                    style: textTheme.mono.copyWith(fontSize: 16),
+                    style: AppTextStyles.mono(fontSize: _ipFieldFontSize),
                     decoration: InputDecoration(
                       hintText: l10n.ipAddressPlaceholder,
-                      hintStyle: textTheme.mono.copyWith(
-                        fontSize: 16,
+                      hintStyle: AppTextStyles.mono(
+                        fontSize: _ipFieldFontSize,
                         color: AppColors.neutralSwatch,
                       ),
                       filled: true,
                       fillColor: AppColors.inputFill,
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
+                        horizontal: _horizontalContentPadding,
+                        vertical: _verticalContentPadding,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -101,7 +105,7 @@ class LookupFormCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                         borderSide: const BorderSide(
                           color: AppColors.accent,
-                          width: 1.5,
+                          width: AppBorderWidth.thick,
                         ),
                       ),
                     ),

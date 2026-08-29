@@ -5,18 +5,26 @@ import 'package:flutter/material.dart';
 class LookupEmptyCard extends StatelessWidget {
   const LookupEmptyCard({super.key});
 
+  static const double _verticalPadding = 40;
+  static const double _horizontalPadding = 28;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final textTheme = context.textTheme;
 
     return AppCard(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 28),
+      padding: const EdgeInsets.symmetric(
+        vertical: _verticalPadding,
+        horizontal: _horizontalPadding,
+      ),
       child: Column(
         children: [
-          const Text(
+          Text(
             '◌',
-            style: TextStyle(fontSize: 32, color: AppColors.textMuted),
+            style: textTheme.headlineLarge?.copyWith(
+              color: AppColors.textMuted,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
@@ -25,7 +33,7 @@ class LookupEmptyCard extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xxs),
           Text(
             l10n.emptyStateBody,
             style: textTheme.bodySmall?.copyWith(

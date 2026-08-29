@@ -9,20 +9,28 @@ class RecentLookupRow extends StatelessWidget {
 
   final Lookup lookup;
 
+  static const double _horizontalPadding = 14;
+  static const double _verticalPadding = 14;
+  static const double _monoFontSize = 13;
+  static const double _vendorDotRadius = 5;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final textTheme = context.textTheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+      padding: const EdgeInsets.symmetric(
+        vertical: _verticalPadding,
+        horizontal: _horizontalPadding,
+      ),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Text(
               lookup.ip,
-              style: textTheme.mono.copyWith(fontSize: 13),
+              style: textTheme.mono.copyWith(fontSize: _monoFontSize),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
@@ -32,7 +40,7 @@ class RecentLookupRow extends StatelessWidget {
             flex: 2,
             child: Text(
               lookup.mac,
-              style: textTheme.mono.copyWith(fontSize: 13),
+              style: textTheme.mono.copyWith(fontSize: _monoFontSize),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
@@ -44,11 +52,11 @@ class RecentLookupRow extends StatelessWidget {
                 ? Row(
                     children: [
                       Container(
-                        width: 16,
-                        height: 16,
+                        width: AppIconSize.sm,
+                        height: AppIconSize.sm,
                         decoration: BoxDecoration(
                           color: vendorSwatchColor(lookup.vendorName!),
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(_vendorDotRadius),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.xs),

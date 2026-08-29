@@ -5,17 +5,23 @@ import 'package:flutter/material.dart';
 class LookupLoadingCard extends StatelessWidget {
   const LookupLoadingCard({super.key});
 
+  static const double _verticalPadding = 36;
+  static const double _horizontalPadding = 28;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
     return AppCard(
-      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 28),
+      padding: const EdgeInsets.symmetric(
+        vertical: _verticalPadding,
+        horizontal: _horizontalPadding,
+      ),
       child: Column(
         children: [
           const SizedBox(
-            width: 28,
-            height: 28,
+            width: AppIconSize.lg,
+            height: AppIconSize.lg,
             child: CircularProgressIndicator(
               strokeWidth: 3,
               color: AppColors.accent,

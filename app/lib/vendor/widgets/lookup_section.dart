@@ -16,6 +16,8 @@ class _LookupSectionState extends State<LookupSection> {
   String? _invalidIp;
   bool _localIpDetectionFailed = false;
 
+  static const double _sectionGap = 20;
+
   void _handleSubmit() {
     final ip = _controller.text.trim();
     if (!isValidIPv4(ip)) {
@@ -77,7 +79,7 @@ class _LookupSectionState extends State<LookupSection> {
             onSubmit: _handleSubmit,
             onUseMyIp: _handleUseMyIp,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: _sectionGap),
           if (invalidIp != null)
             Builder(
               builder: (context) {

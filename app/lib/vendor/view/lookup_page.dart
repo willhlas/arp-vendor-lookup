@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 class LookupPage extends StatelessWidget {
   const LookupPage({super.key});
 
+  static const double _maxContentWidth = 1440;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +20,7 @@ class LookupPage extends StatelessWidget {
           ),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1440),
+              constraints: const BoxConstraints(maxWidth: _maxContentWidth),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -40,6 +42,7 @@ class _LookupContent extends StatelessWidget {
 
   static const double _wideLayoutBreakpoint = 900;
   static const double _recentLookupsPanelHeight = 420;
+  static const double _lookupSectionWidth = 520;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,7 @@ class _LookupContent extends StatelessWidget {
           return const Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(width: 520, child: LookupSection()),
+              SizedBox(width: _lookupSectionWidth, child: LookupSection()),
               SizedBox(width: AppSpacing.xl),
               Expanded(child: recentLookupsPanel),
             ],
