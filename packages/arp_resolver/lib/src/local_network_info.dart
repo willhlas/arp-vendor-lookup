@@ -43,9 +43,7 @@ class SystemLocalNetworkInfo implements LocalNetworkInfo {
         includeLinkLocal: false,
       );
     } catch (e) {
-      throw LocalNetworkInfoFailure(
-        'could not list network interfaces: $e',
-      );
+      throw LocalNetworkInfoFailure('could not list network interfaces: $e');
     }
 
     if (addresses.isEmpty) return null;
