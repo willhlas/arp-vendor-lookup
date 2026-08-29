@@ -126,8 +126,7 @@ config/routes.rb
   looks down). Collapsing these into one generic "upstream failed" status
   would hide information a client could otherwise act on.
 - **No cache expiry** — a cached `Lookup` (found or not) is never
-  re-fetched. CLAUDE.md's spec doesn't call for a TTL, so this follows
-  YAGNI; revisit if vendor data needs to be refreshed later.
+  re-fetched. CLAUDE.md's spec doesn't call for a TTL.
 - **Full MAC required** — a partial OUI prefix (which macvendorlookup.com's
   own API technically accepts) is rejected with `422`, since the Flutter
   app always reads a complete MAC from the ARP table.

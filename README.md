@@ -1,7 +1,11 @@
-# arp-vendor-lookup
+# ARP Vendor Lookup
+
+<img src="app/assets/icons/app_icon.png" alt="ARP Vendor Lookup app icon" width="96" />
 
 A desktop tool that resolves an IP address to a MAC address and a vendor
-name: a Flutter desktop app reads the local ARP table to turn an IP into a
+name.
+
+A Flutter desktop app reads the local ARP table to turn an IP into a
 MAC, then calls a small Rails API to turn that MAC into a vendor name.
 
 ## Repository layout
