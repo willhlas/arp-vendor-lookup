@@ -121,6 +121,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get ipColumnHeader => 'IP';
+
+  @override
   String get macColumnHeader => 'MAC';
 
   @override

@@ -7,6 +7,7 @@ void main() {
     final foundLookup = Lookup(
       id: 1,
       mac: 'AA:BB:CC:DD:EE:FF',
+      ip: '192.168.1.10',
       vendorName: 'Example Vendor',
       createdAt: DateTime.utc(2026, 8, 28),
       updatedAt: DateTime.utc(2026, 8, 28),
@@ -15,6 +16,7 @@ void main() {
     final notFoundLookup = Lookup(
       id: 2,
       mac: 'AA:BB:CC:DD:EE:FF',
+      ip: '192.168.1.10',
       vendorName: null,
       createdAt: DateTime.utc(2026, 8, 28),
       updatedAt: DateTime.utc(2026, 8, 28),

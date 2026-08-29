@@ -12,9 +12,9 @@ class VendorApiClient {
   final String _baseUrl;
   final http.Client _httpClient;
 
-  Future<Lookup> lookupByMac(String mac) async {
+  Future<Lookup> lookupByMac(String mac, String ip) async {
     final uri = Uri.parse('$_baseUrl/lookups').replace(
-      queryParameters: {'mac': mac},
+      queryParameters: {'mac': mac, 'ip': ip},
     );
     final response = await _send(uri);
 

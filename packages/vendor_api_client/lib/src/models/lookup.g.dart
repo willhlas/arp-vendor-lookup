@@ -9,6 +9,7 @@ part of 'lookup.dart';
 Lookup _$LookupFromJson(Map<String, dynamic> json) => Lookup(
   id: (json['id'] as num).toInt(),
   mac: json['mac'] as String,
+  ip: json['ip'] as String,
   vendorName: json['vendor_name'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -17,6 +18,7 @@ Lookup _$LookupFromJson(Map<String, dynamic> json) => Lookup(
 Map<String, dynamic> _$LookupToJson(Lookup instance) => <String, dynamic>{
   'id': instance.id,
   'mac': instance.mac,
+  'ip': instance.ip,
   'vendor_name': instance.vendorName,
   'created_at': instance.createdAt.toIso8601String(),
   'updated_at': instance.updatedAt.toIso8601String(),

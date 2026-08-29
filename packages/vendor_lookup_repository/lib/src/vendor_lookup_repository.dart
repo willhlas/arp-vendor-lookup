@@ -28,7 +28,7 @@ class VendorLookupRepository {
 
     final Lookup lookup;
     try {
-      lookup = await _vendorApiClient.lookupByMac(entry.mac);
+      lookup = await _vendorApiClient.lookupByMac(entry.mac, ip);
     } catch (e) {
       throw VendorApiLookupFailure(
         'could not look up vendor for ${entry.mac}: $e',

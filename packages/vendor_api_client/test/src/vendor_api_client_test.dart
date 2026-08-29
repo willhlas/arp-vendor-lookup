@@ -34,6 +34,7 @@ void main() {
   final lookupJson = jsonEncode({
     'id': 1,
     'mac': 'AA:BB:CC:DD:EE:FF',
+    'ip': '192.168.1.24',
     'vendor_name': 'Example Vendor',
     'created_at': '2026-08-28T18:20:00.000Z',
     'updated_at': '2026-08-28T18:20:00.000Z',
@@ -42,6 +43,7 @@ void main() {
   final notFoundJson = jsonEncode({
     'id': 2,
     'mac': 'AA:BB:CC:DD:EE:FF',
+    'ip': '192.168.1.24',
     'vendor_name': null,
     'created_at': '2026-08-28T18:20:00.000Z',
     'updated_at': '2026-08-28T18:20:00.000Z',
@@ -51,7 +53,10 @@ void main() {
     test('200 with a vendor returns a found Lookup', () async {
       stubGet(lookupJson, 200);
 
-      final lookup = await client.lookupByMac('AA:BB:CC:DD:EE:FF');
+      final lookup = await client.lookupByMac(
+        'AA:BB:CC:DD:EE:FF',
+        '192.168.1.24',
+      );
 
       expect(lookup.found, isTrue);
       expect(lookup.vendorName, 'Example Vendor');
@@ -59,12 +64,16 @@ void main() {
       final captured =
           verify(() => httpClient.get(captureAny())).captured.single as Uri;
       expect(captured.queryParameters['mac'], 'AA:BB:CC:DD:EE:FF');
+      expect(captured.queryParameters['ip'], '192.168.1.24');
     });
 
     test('404 with a null vendor_name returns a not-found Lookup', () async {
       stubGet(notFoundJson, 404);
 
-      final lookup = await client.lookupByMac('AA:BB:CC:DD:EE:FF');
+      final lookup = await client.lookupByMac(
+        'AA:BB:CC:DD:EE:FF',
+        '192.168.1.24',
+      );
 
       expect(lookup.found, isFalse);
     });
@@ -73,7 +82,7 @@ void main() {
       stubGet(jsonEncode({'error': 'mac must be a full 6-octet address'}), 422);
 
       expect(
-        () => client.lookupByMac('not-a-mac'),
+        () => client.lookupByMac('not-a-mac', '192.168.1.24'),
         throwsA(
           isA<InvalidMacFailure>().having(
             (e) => e.message,
@@ -88,7 +97,7 @@ void main() {
       stubGet(jsonEncode({'error': 'vendor lookup API returned 500'}), 502);
 
       expect(
-        () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+        () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
         throwsA(
           isA<UpstreamLookupFailure>().having(
             (e) => e.message,
@@ -110,7 +119,7 @@ void main() {
         );
 
         expect(
-          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
           throwsA(isA<UpstreamLookupFailure>()),
         );
       },
@@ -123,7 +132,7 @@ void main() {
       );
 
       expect(
-        () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+        () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
         throwsA(
           isA<RateLimitedFailure>().having(
             (e) => e.message,
@@ -143,7 +152,7 @@ void main() {
         );
 
         expect(
-          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
           throwsA(
             isA<UpstreamUnavailableFailure>().having(
               (e) => e.message,
@@ -161,7 +170,7 @@ void main() {
       ).thenThrow(Exception('connection refused'));
 
       expect(
-        () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+        () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
         throwsA(isA<NetworkFailure>()),
       );
     });
@@ -170,7 +179,7 @@ void main() {
       stubGet('not json', 200);
 
       expect(
-        () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+        () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
         throwsA(isA<UnexpectedResponseFailure>()),
       );
     });
@@ -181,7 +190,7 @@ void main() {
         stubGet(jsonEncode({'id': 1}), 200);
 
         expect(
-          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
           throwsA(isA<UnexpectedResponseFailure>()),
         );
       },
@@ -193,7 +202,7 @@ void main() {
         stubGet('', 500);
 
         expect(
-          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
           throwsA(
             isA<UnexpectedResponseFailure>().having(
               (e) => e.statusCode,
@@ -211,7 +220,7 @@ void main() {
         stubGet('not json', 422);
 
         expect(
-          () => client.lookupByMac('AA:BB:CC:DD:EE:FF'),
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
           throwsA(isA<UnexpectedResponseFailure>()),
         );
       },

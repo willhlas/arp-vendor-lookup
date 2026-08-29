@@ -151,6 +151,10 @@
       }
     }
   },
+  "ipColumnHeader": "IP",
+  "@ipColumnHeader": {
+    "description": "Column header for the IP address in the recent lookups table."
+  },
   "macColumnHeader": "MAC",
   "@macColumnHeader": {
     "description": "Column header for the MAC address in the recent lookups table."

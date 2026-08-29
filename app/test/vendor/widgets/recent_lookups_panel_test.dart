@@ -77,6 +77,7 @@ void main() {
         Lookup(
           id: 1,
           mac: 'aa:bb:cc:dd:ee:ff',
+          ip: '192.168.1.24',
           vendorName: 'Acme Corp',
           createdAt: DateTime(2026),
           updatedAt: DateTime(2026),
@@ -84,6 +85,7 @@ void main() {
         Lookup(
           id: 2,
           mac: '11:22:33:44:55:66',
+          ip: '10.0.0.5',
           vendorName: null,
           createdAt: DateTime(2026),
           updatedAt: DateTime(2026),
@@ -105,8 +107,10 @@ void main() {
       final l10n = context.l10n;
 
       expect(find.text(l10n.recentLookupsCount(2)), findsOneWidget);
+      expect(find.text('192.168.1.24'), findsOneWidget);
       expect(find.text('aa:bb:cc:dd:ee:ff'), findsOneWidget);
       expect(find.text('Acme Corp'), findsOneWidget);
+      expect(find.text('10.0.0.5'), findsOneWidget);
       expect(find.text('11:22:33:44:55:66'), findsOneWidget);
     });
   });
