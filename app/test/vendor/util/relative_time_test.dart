@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group(formatRelativeTime, () {
+  group('formatRelativeTime', () {
     late AppLocalizations l10n;
     final now = DateTime(2026);
 
-    setUpAll(() async {
+    setUp(() async {
       l10n = await AppLocalizations.delegate.load(const Locale('en'));
     });
 
@@ -16,7 +16,7 @@ void main() {
       final dateTime = now.subtract(const Duration(seconds: 30));
       expect(
         formatRelativeTime(dateTime, l10n: l10n, now: now),
-        l10n.timeJustNow,
+        equals(l10n.timeJustNow),
       );
     });
 
@@ -24,7 +24,7 @@ void main() {
       final dateTime = now.subtract(const Duration(minutes: 14));
       expect(
         formatRelativeTime(dateTime, l10n: l10n, now: now),
-        l10n.timeMinutesAgo(14),
+        equals(l10n.timeMinutesAgo(14)),
       );
     });
 
@@ -32,7 +32,7 @@ void main() {
       final dateTime = now.subtract(const Duration(hours: 3));
       expect(
         formatRelativeTime(dateTime, l10n: l10n, now: now),
-        l10n.timeHoursAgo(3),
+        equals(l10n.timeHoursAgo(3)),
       );
     });
 
@@ -40,7 +40,7 @@ void main() {
       final dateTime = now.subtract(const Duration(days: 2));
       expect(
         formatRelativeTime(dateTime, l10n: l10n, now: now),
-        l10n.timeDaysAgo(2),
+        equals(l10n.timeDaysAgo(2)),
       );
     });
   });

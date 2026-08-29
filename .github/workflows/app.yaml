@@ -1,0 +1,22 @@
+name: app
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - ".github/workflows/app.yaml"
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      working_directory: app
+      coverage_excludes: "**/*.g.dart **/*.gen.dart **/l10n/*.dart **/l10n/**/*.dart"
+      flutter_channel: stable
+      flutter_version: 3.44.6
