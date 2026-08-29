@@ -9,7 +9,27 @@
       "program": "lib/main.dart",
       "deviceId": "macos",
       "flutterMode": "debug",
-      "preLaunchTask": "Start Rails API"
+      "preLaunchTask": "Start Rails API (macOS)"
+    },
+    {
+      "name": "Run app + API (Linux)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "app",
+      "program": "lib/main.dart",
+      "deviceId": "linux",
+      "flutterMode": "debug",
+      "preLaunchTask": "Start Rails API (Linux)"
+    },
+    {
+      "name": "Run app + API (Windows)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "app",
+      "program": "lib/main.dart",
+      "deviceId": "windows",
+      "flutterMode": "debug",
+      "preLaunchTask": "Start Rails API (Windows)"
     }
   ]
 }

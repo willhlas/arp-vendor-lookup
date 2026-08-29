@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Start Rails API",
+      "label": "Start Rails API (macOS)",
       "type": "shell",
       "command": "bin/rails server",
       "options": {
@@ -13,6 +13,66 @@
         "shell": {
           "executable": "/bin/zsh",
           "args": ["-c"]
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Puma starting",
+          "endsPattern": "Listening on"
+        }
+      },
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Start Rails API (Linux)",
+      "type": "shell",
+      "command": "bin/rails server",
+      "options": {
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "PATH": "${env:HOME}/.local/share/mise/shims:${env:PATH}"
+        },
+        "shell": {
+          "executable": "/bin/bash",
+          "args": ["-c"]
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "."
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Puma starting",
+          "endsPattern": "Listening on"
+        }
+      },
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Start Rails API (Windows)",
+      "type": "shell",
+      "command": "ruby bin/rails server",
+      "options": {
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "PATH": "${env:USERPROFILE}\\.local\\share\\mise\\shims;${env:PATH}"
+        },
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-Command"]
         }
       },
       "isBackground": true,
