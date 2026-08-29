@@ -13,15 +13,19 @@ class AppLogo extends StatelessWidget {
   final double width;
   final double height;
 
+  static const double _containerDimension = 40;
+  static const Color _gradientStart = Color(0xFF5B7FE0);
+  static const Color _gradientEnd = Color(0xFF3E5FC4);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: 40,
+      dimension: _containerDimension,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.sm),
           gradient: const LinearGradient(
-            colors: [Color(0xFF5B7FE0), Color(0xFF3E5FC4)],
+            colors: [_gradientStart, _gradientEnd],
           ),
         ),
         child: Padding(
@@ -42,6 +46,9 @@ class AppLogoPainter extends CustomPainter {
   const AppLogoPainter();
 
   static const _defaultSize = Size(45, 50);
+  static const Color _outerShapeColor = Color(0xff9baee5);
+  static const Color _innerCircleColor = Colors.white;
+  static const Color _accentShapeColor = Color(0xffe4eaf9);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -146,7 +153,7 @@ class AppLogoPainter extends CustomPainter {
 
     final paintOne = Paint()
       ..style = PaintingStyle.fill
-      ..color = const Color(0xff9baee5);
+      ..color = _outerShapeColor;
 
     canvas.drawPath(pathOne, paintOne);
 
@@ -159,7 +166,7 @@ class AppLogoPainter extends CustomPainter {
 
     final paintTwo = Paint()
       ..style = PaintingStyle.fill
-      ..color = const Color(0xffffffff);
+      ..color = _innerCircleColor;
     canvas.drawPath(pathTwo, paintTwo);
 
     final pathThree = Path()
@@ -251,7 +258,7 @@ class AppLogoPainter extends CustomPainter {
 
     final paintThree = Paint()
       ..style = PaintingStyle.fill
-      ..color = const Color(0xffe4eaf9);
+      ..color = _accentShapeColor;
     canvas.drawPath(pathThree, paintThree);
   }
 

@@ -13,6 +13,9 @@ class AppBadge extends StatelessWidget {
   final String label;
   final AppBadgeVariant variant;
 
+  /// Sits intentionally between labelSmall (11) and labelMedium (12).
+  static const double _labelFontSize = 11.5;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
@@ -29,7 +32,7 @@ class AppBadge extends StatelessWidget {
         child: Text(
           label.toUpperCase(),
           style: textTheme.labelSmall?.copyWith(
-            fontSize: 11.5,
+            fontSize: _labelFontSize,
             fontWeight: FontWeight.w600,
             color: colors.foreground,
             letterSpacing: 0.3,

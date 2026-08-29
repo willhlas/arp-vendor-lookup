@@ -119,6 +119,8 @@ class _RecentLookups extends StatelessWidget {
 class _ColumnHeaderRow extends StatelessWidget {
   const _ColumnHeaderRow();
 
+  static const double _horizontalPadding = 14;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -131,10 +133,17 @@ class _ColumnHeaderRow extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.only(left: 14, right: 14, bottom: 10),
+      padding: const EdgeInsets.only(
+        left: _horizontalPadding,
+        right: _horizontalPadding,
+        bottom: AppSpacing.sm,
+      ),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: AppColors.divider, width: 1.5),
+          bottom: BorderSide(
+            color: AppColors.divider,
+            width: AppBorderWidth.thick,
+          ),
         ),
       ),
       child: Row(

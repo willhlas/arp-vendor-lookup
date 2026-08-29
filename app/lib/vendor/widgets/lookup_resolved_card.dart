@@ -8,6 +8,8 @@ import 'package:vendor_lookup_repository/vendor_lookup_repository.dart';
 class LookupResolvedCard extends StatelessWidget {
   const LookupResolvedCard({super.key});
 
+  static const double _swatchRadius = 6;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -57,11 +59,11 @@ class LookupResolvedCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 22,
-                  height: 22,
+                  width: AppIconSize.md,
+                  height: AppIconSize.md,
                   decoration: BoxDecoration(
                     color: vendorSwatchColor(vendorName),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(_swatchRadius),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),

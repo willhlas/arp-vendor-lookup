@@ -11,19 +11,25 @@ class LookupErrorCard extends StatelessWidget {
   final String title;
   final String body;
 
+  static const double _horizontalPadding = 28;
+  static const double _badgeGlyphFontSize = 13;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
 
     return AppCard(
       variant: AppCardVariant.error,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 28),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.lg,
+        horizontal: _horizontalPadding,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 22,
-            height: 22,
+            width: AppIconSize.md,
+            height: AppIconSize.md,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               color: AppColors.error,
@@ -34,7 +40,7 @@ class LookupErrorCard extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: _badgeGlyphFontSize,
               ),
             ),
           ),
@@ -49,7 +55,7 @@ class LookupErrorCard extends StatelessWidget {
                     color: AppColors.errorTitle,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   body,
                   style: textTheme.bodySmall?.copyWith(

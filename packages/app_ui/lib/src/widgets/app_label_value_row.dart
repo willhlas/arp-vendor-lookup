@@ -24,7 +24,6 @@ class AppLabelValueRow extends StatelessWidget {
             Text(
               label.toUpperCase(),
               style: textTheme.labelMedium?.copyWith(
-                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
                 letterSpacing: 0.4,
