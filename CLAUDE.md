@@ -14,10 +14,10 @@ name.
   result, and returns it. `GET /lookups` (no `mac`) returns recent lookups
   for the app's history view. No authentication.
 
-The interesting complexity in this project is at the edges, not in the
-middle: parsing OS-specific ARP output, and handling a flaky/rate-limited
-third-party API gracefully. Most bugs will live in those two places —
-treat them accordingly (see Testing below).
+The interesting complexity here is at the edges, not in the middle:
+parsing OS-specific ARP output, and handling a flaky/rate-limited
+third-party API. Treat those as the highest-risk areas (see Testing
+below).
 
 ## Repository structure
 
@@ -56,12 +56,9 @@ package):
   the "use my IP" feature — a second, related I/O concern alongside ARP
   parsing, not just the ARP table itself.
 - `app_ui` is the design-system/presentational package.
-- No pure-logic package exists, and none is needed yet — this app has no
-  algorithmic component. Don't add one speculatively (YAGNI).
-- There's no state-management package yet either. When one is added, it
-  follows the same one-package-per-concern approach: it lives under
-  `packages/`, depends on the repository packages, and is never depended
-  on by them — dependencies point one direction only.
+- There's no separate state-management package: Bloc state management
+  lives inline in `app` (see State management below) rather than in its
+  own `packages/` package.
 
 `app` depends on all four `packages/*` as local (path) dependencies.
 Nothing in `packages/` should ever depend on `app`.
@@ -93,8 +90,6 @@ convention:
   one way, and those ways are meaningfully different to the user (parse
   failure vs. not-found vs. network failure vs. rate-limited). Don't
   collapse them into one generic error.
-- **YAGNI.** This is a POC. Don't add abstraction layers, config systems,
-  or extensibility hooks for requirements that don't exist yet.
 
 ## Flutter / Dart conventions
 
@@ -166,8 +161,8 @@ notes or PR description).
   single-feature app like this one, this three-layer split is fully
   realized once at the app root (`App` wires providers, `AppView` builds
   the `MaterialApp`) rather than duplicated per feature — the vendor/
-  lookup feature composes `LookupPage` + section widgets directly, which
-  is fine at this app's current size. `LookupSection` is also the one
+  lookup feature composes `LookupPage` + section widgets directly.
+  `LookupSection` is also the one
   accepted `StatefulWidget` in the feature code (it owns a
   `TextEditingController`, which needs `State`) — everything else stays
   `StatelessWidget`.
@@ -193,12 +188,11 @@ notes or PR description).
 
 ## Rails / Ruby conventions
 
-You're new to Rails, so the goal here is: lean into Rails' own
-conventions where they don't conflict with the principles above, rather
-than importing patterns from other frameworks. Rails is opinionated by
-design — fighting it (non-standard naming, skipping ActiveRecord
-conventions, etc.) usually costs more than it's worth for a project this
-size.
+Lean into Rails' own conventions where they don't conflict with the
+principles above, rather than importing patterns from other frameworks.
+Rails is opinionated by design — fighting it (non-standard naming,
+skipping ActiveRecord conventions, etc.) usually costs more than it's
+worth for a project this size.
 
 - **Thin controllers.** A controller's job is: parse/validate params,
   call one thing, render a response. If a controller method has
@@ -206,19 +200,17 @@ size.
   belongs elsewhere.
 - **External calls live in a service object.** The call to the vendor
   lookup API belongs in something like `app/services/vendor_lookup_service.rb`
-  — not in the controller, not in the model. This is the Rails version of
-  "don't let your UI layer make network calls" — it's the same principle
-  you already apply in Flutter, just in a different layer.
+  — not in the controller, not in the model.
 - **Models represent data, not orchestration.** The `Lookup` model
   validates and persists a lookup record. It doesn't know how to call an
   external API.
 - **Follow Rails naming conventions rather than override them** —
   snake_case files and methods, singular model class names (`Lookup`)
   with pluralized table names (`lookups`), RESTful controller actions.
-  This isn't bureaucracy — it's what makes the codebase readable to
-  anyone else who knows Rails, and what most Rails tooling assumes.
-- **Config and secrets** (the vendor API key/URL, if the chosen provider
-  needs one) go through Rails credentials or environment variables —
+- **Config and secrets.** The chosen vendor lookup provider
+  (`macvendorlookup.com`) is free and keyless, so its endpoint is a plain
+  constant in `VendorLookupService`. If a future provider needs an API
+  key, that goes through Rails credentials or environment variables —
   never hardcoded in a service class.
 - **Generated infrastructure not in scope is present and config-wired, but
   functionally unused.** `rails new api --api` scaffolds Solid Queue,
@@ -233,12 +225,11 @@ size.
   Rails-cache-backed caching, no websockets, and no file uploads — the
   `/lookups?mac=...` caching described above is done entirely via the
   `Lookup` ActiveRecord table itself (a unique index on `mac`, including
-  persisted not-found rows), not Solid Cache. Removing the unused
-  infrastructure is a separate cleanup that hasn't happened yet. Don't
-  build a feature that assumes it's gone, and don't add new code that
-  leans on any of it without a concrete need (YAGNI). Kamal deployment
-  files may or may not be present depending on whether a deploy target
-  was decided at scaffold time.
+  persisted not-found rows), not Solid Cache. That unused infrastructure
+  was deliberately left in place rather than stripped out — don't build a
+  feature that assumes it's gone, and don't add new code that leans on
+  any of it without a concrete need. Kamal deploy config
+  (`.kamal/`, `api/config/deploy.yml`, `api/bin/kamal`) is present.
 
 ## Testing
 
