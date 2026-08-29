@@ -4,14 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group(AppBadge, () {
-    testWidgets('renders its label in uppercase', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: AppBadge(label: 'resolved', variant: AppBadgeVariant.success),
-        ),
-      );
+    for (final variant in AppBadgeVariant.values) {
+      testWidgets(
+        'renders label in uppercase for $variant variant',
+        (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: AppBadge(label: 'label', variant: variant),
+            ),
+          );
 
-      expect(find.text('RESOLVED'), findsOneWidget);
-    });
+          expect(find.text('LABEL'), findsOneWidget);
+        },
+      );
+    }
   });
 }

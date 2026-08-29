@@ -22,7 +22,7 @@ class RecentLookupRow extends StatelessWidget {
             flex: 2,
             child: Text(
               lookup.ip,
-              style: AppTextStyles.mono(fontSize: 13),
+              style: textTheme.mono.copyWith(fontSize: 13),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
@@ -32,7 +32,7 @@ class RecentLookupRow extends StatelessWidget {
             flex: 2,
             child: Text(
               lookup.mac,
-              style: AppTextStyles.mono(fontSize: 13),
+              style: textTheme.mono.copyWith(fontSize: 13),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),

@@ -12,20 +12,21 @@ void main() {
       expect(find.text('content'), findsOneWidget);
     });
 
-    testWidgets('uses the error-tinted decoration for the error variant', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: AppCard(
-            variant: AppCardVariant.error,
-            child: Text('content'),
+    testWidgets(
+      'uses the error-tinted decoration for the error variant',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: AppCard(
+              variant: AppCardVariant.error,
+              child: Text('content'),
+            ),
           ),
-        ),
-      );
+        );
 
-      final widget = tester.widget<Material>(find.byType(Material));
-      expect(widget.color, AppColors.errorBackground);
-    });
+        final widget = tester.widget<Material>(find.byType(Material));
+        expect(widget.color, AppColors.errorBackground);
+      },
+    );
   });
 }

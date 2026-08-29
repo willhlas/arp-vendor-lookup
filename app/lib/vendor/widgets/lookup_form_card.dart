@@ -72,10 +72,10 @@ class LookupFormCard extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     onSubmitted: isLoading ? null : (_) => onSubmit(),
-                    style: AppTextStyles.mono(fontSize: 16),
+                    style: textTheme.mono.copyWith(fontSize: 16),
                     decoration: InputDecoration(
                       hintText: l10n.ipAddressPlaceholder,
-                      hintStyle: AppTextStyles.mono(
+                      hintStyle: textTheme.mono.copyWith(
                         fontSize: 16,
                         color: AppColors.neutralSwatch,
                       ),
