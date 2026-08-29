@@ -42,11 +42,11 @@ class LookupUnknownVendorCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           AppLabelValueRow(
             label: l10n.ipAddressLabel,
-            value: Text(result?.ip ?? '', style: AppTextStyles.mono()),
+            value: Text(result?.ip ?? '', style: textTheme.mono),
           ),
           AppLabelValueRow(
             label: l10n.macAddressRowLabel,
-            value: Text(result?.mac ?? '', style: AppTextStyles.mono()),
+            value: Text(result?.mac ?? '', style: textTheme.mono),
           ),
           AppLabelValueRow(
             label: l10n.vendorRowLabel,

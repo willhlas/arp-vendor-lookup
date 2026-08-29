@@ -37,3 +37,7 @@ extension BuildContextX on BuildContext {
 
   TextTheme get textTheme => theme.textTheme;
 }
+
+extension TextThemeX on TextTheme {
+  TextStyle get mono => AppTextStyles.mono();
+}

@@ -43,7 +43,7 @@ class LookupArpMissCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           AppLabelValueRow(
             label: l10n.ipAddressLabel,
-            value: Text(result?.ip ?? '', style: AppTextStyles.mono()),
+            value: Text(result?.ip ?? '', style: textTheme.mono),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(

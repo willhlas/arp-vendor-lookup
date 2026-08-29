@@ -8,7 +8,7 @@ void main() {
       final first = vendorSwatchColor('Acme Corp');
       final second = vendorSwatchColor('Acme Corp');
 
-      expect(first, second);
+      expect(first, equals(second));
     });
 
     test('stays within the fixed palette across repeated calls', () {

@@ -1,5 +1,5 @@
+import 'package:app_ui/app_ui.dart';
 import 'package:app_ui/src/generated/fonts.gen.dart';
-import 'package:app_ui/src/theme/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AppTextStyles {
