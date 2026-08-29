@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:arp_resolver/arp_resolver.dart';
@@ -34,7 +36,7 @@ void main() {
 
       expect(
         entry,
-        const ArpEntry(ip: '192.168.1.1', mac: '5c:35:fc:e1:ee:94'),
+        equals(ArpEntry(ip: '192.168.1.1', mac: '5c:35:fc:e1:ee:94')),
       );
       verify(() => runner('ip', ['neigh', 'show'])).called(1);
     });
@@ -101,7 +103,7 @@ void main() {
 
         expect(
           entry,
-          const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+          equals(ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35')),
         );
       },
     );
@@ -121,7 +123,7 @@ void main() {
 
       expect(
         entry,
-        const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+        equals(ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35')),
       );
     });
 
@@ -130,7 +132,7 @@ void main() {
 
       expect(
         entry,
-        const ArpEntry(ip: '192.168.1.200', mac: 'aa:bb:cc:dd:ee:ff'),
+        equals(ArpEntry(ip: '192.168.1.200', mac: 'aa:bb:cc:dd:ee:ff')),
       );
     });
 

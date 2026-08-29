@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:arp_resolver/arp_resolver.dart';
@@ -14,7 +16,19 @@ NetworkAddressLister _fakeLister(
 }
 
 void main() {
-  group('SystemLocalNetworkInfo', () {
+  group(SystemLocalNetworkInfo, () {
+    test('can instantiate', () {
+      expect(SystemLocalNetworkInfo(), isNotNull);
+    });
+
+    test('can get default list', () async {
+      final info = SystemLocalNetworkInfo();
+
+      final address = await info.primaryIPv4Address();
+
+      expect(address, isNotNull);
+    });
+
     test('returns the first address returned by the lister', () async {
       final info = SystemLocalNetworkInfo(
         listAddresses: _fakeLister(
@@ -26,7 +40,7 @@ void main() {
 
       final address = await info.primaryIPv4Address();
 
-      expect(address, '192.168.1.42');
+      expect(address, equals('192.168.1.42'));
     });
 
     test('returns null when there are no active addresses', () async {

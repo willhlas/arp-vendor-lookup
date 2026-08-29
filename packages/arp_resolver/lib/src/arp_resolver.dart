@@ -11,8 +11,6 @@ typedef ArpProcessRunner =
       List<String> arguments,
     );
 
-// One-method interface is intentional: it exists so per-platform
-// implementations (macOS now, Linux/Windows later) are swappable.
 abstract class ArpResolver {
   /// Returns the [ArpEntry] for [ip], or `null` if the local ARP table has
   /// no entry for [ip] (including an `(incomplete)` entry with no resolved
