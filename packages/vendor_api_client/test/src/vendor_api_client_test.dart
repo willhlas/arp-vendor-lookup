@@ -10,10 +10,6 @@ class _MockHttpClient extends Mock implements http.Client {}
 class _FakeUri extends Fake implements Uri {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(_FakeUri());
-  });
-
   late http.Client httpClient;
   late VendorApiClient client;
 
@@ -23,6 +19,10 @@ void main() {
       httpClient: httpClient,
       baseUrl: 'http://localhost:3000',
     );
+  });
+
+  setUpAll(() {
+    registerFallbackValue(_FakeUri());
   });
 
   void stubGet(String body, int statusCode) {
@@ -49,6 +49,13 @@ void main() {
     'updated_at': '2026-08-28T18:20:00.000Z',
   });
 
+  test('can instantiate', () {
+    expect(
+      VendorApiClient(baseUrl: 'http://localhost:3000'),
+      isA<VendorApiClient>(),
+    );
+  });
+
   group('lookupByMac', () {
     test('200 with a vendor returns a found Lookup', () async {
       stubGet(lookupJson, 200);
@@ -59,12 +66,12 @@ void main() {
       );
 
       expect(lookup.found, isTrue);
-      expect(lookup.vendorName, 'Example Vendor');
+      expect(lookup.vendorName, equals('Example Vendor'));
 
       final captured =
           verify(() => httpClient.get(captureAny())).captured.single as Uri;
-      expect(captured.queryParameters['mac'], 'AA:BB:CC:DD:EE:FF');
-      expect(captured.queryParameters['ip'], '192.168.1.24');
+      expect(captured.queryParameters['mac'], equals('AA:BB:CC:DD:EE:FF'));
+      expect(captured.queryParameters['ip'], equals('192.168.1.24'));
     });
 
     test('404 with a null vendor_name returns a not-found Lookup', () async {
@@ -270,8 +277,8 @@ void main() {
       final lookups = await client.recentLookups();
 
       expect(lookups, hasLength(2));
-      expect(lookups[0].id, 1);
-      expect(lookups[1].id, 2);
+      expect(lookups[0].id, equals(1));
+      expect(lookups[1].id, equals(2));
     });
 
     test('200 with an empty array returns an empty list', () async {
