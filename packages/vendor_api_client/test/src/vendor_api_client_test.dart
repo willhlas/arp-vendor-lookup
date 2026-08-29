@@ -225,6 +225,42 @@ void main() {
         );
       },
     );
+
+    test(
+      'a 429 with a non-JSON body throws UnexpectedResponseFailure',
+      () async {
+        stubGet('not json', 429);
+
+        expect(
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
+          throwsA(isA<UnexpectedResponseFailure>()),
+        );
+      },
+    );
+
+    test(
+      'a 502 with a non-JSON body throws UnexpectedResponseFailure',
+      () async {
+        stubGet('not json', 502);
+
+        expect(
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
+          throwsA(isA<UnexpectedResponseFailure>()),
+        );
+      },
+    );
+
+    test(
+      'a 503 with a non-JSON body throws UnexpectedResponseFailure',
+      () async {
+        stubGet('not json', 503);
+
+        expect(
+          () => client.lookupByMac('AA:BB:CC:DD:EE:FF', '192.168.1.24'),
+          throwsA(isA<UnexpectedResponseFailure>()),
+        );
+      },
+    );
   });
 
   group('recentLookups', () {

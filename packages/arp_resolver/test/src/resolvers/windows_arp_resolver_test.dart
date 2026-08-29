@@ -49,12 +49,22 @@ void main() {
       expect(entry, isNull);
     });
 
-    test('returns null when the ip is invalid', () async {
+    test('returns null when the mac is all-zero', () async {
       when(() => runner('arp', ['-a'])).thenAnswer(
         (_) async => _result(0, _fixture('arp_a_windows.txt')),
       );
 
       final entry = await resolver.resolve('192.168.1.150');
+
+      expect(entry, isNull);
+    });
+
+    test('returns null when the type is invalid', () async {
+      when(() => runner('arp', ['-a'])).thenAnswer(
+        (_) async => _result(0, _fixture('arp_a_windows.txt')),
+      );
+
+      final entry = await resolver.resolve('192.168.1.151');
 
       expect(entry, isNull);
     });
@@ -87,6 +97,36 @@ void main() {
       );
 
       expect(resolver.resolve('192.168.1.1'), throwsA(isA<ArpParseFailure>()));
+    });
+
+    test(
+      'does not throw when only some lines are unparseable, and still '
+      'resolves a matching line',
+      () async {
+        when(() => runner('arp', ['-a'])).thenAnswer(
+          (_) async => _result(0, _fixture('arp_a_windows_mixed.txt')),
+        );
+
+        final entry = await resolver.resolve('192.168.1.121');
+
+        expect(
+          entry,
+          const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+        );
+      },
+    );
+
+    test('parses output with CRLF line endings', () async {
+      when(() => runner('arp', ['-a'])).thenAnswer(
+        (_) async => _result(0, _fixture('arp_a_windows_crlf.txt')),
+      );
+
+      final entry = await resolver.resolve('192.168.1.1');
+
+      expect(
+        entry,
+        const ArpEntry(ip: '192.168.1.1', mac: '5c:35:fc:e1:ee:94'),
+      );
     });
   });
 

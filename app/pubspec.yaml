@@ -27,10 +27,21 @@ dependencies:
 
 dev_dependencies:
   bloc_test: ^10.0.0
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.5
   very_good_analysis: ^10.3.0
+
+flutter_launcher_icons:
+  ios: false
+  android: false
+  image_path: "assets/icons/app_icon.png"
+  windows:
+    generate: true
+    icon_size: 48
+  macos:
+    generate: true
 
 flutter:
   uses-material-design: true

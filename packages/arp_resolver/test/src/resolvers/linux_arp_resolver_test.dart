@@ -88,6 +88,23 @@ void main() {
 
       expect(resolver.resolve('192.168.1.1'), throwsA(isA<ArpParseFailure>()));
     });
+
+    test(
+      'does not throw when only some lines are unparseable, and still '
+      'resolves a matching line',
+      () async {
+        when(() => runner('ip', ['neigh', 'show'])).thenAnswer(
+          (_) async => _result(0, _fixture('ip_neigh_linux_mixed.txt')),
+        );
+
+        final entry = await resolver.resolve('192.168.1.121');
+
+        expect(
+          entry,
+          const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+        );
+      },
+    );
   });
 
   group('parseArpOutput', () {
@@ -105,6 +122,15 @@ void main() {
       expect(
         entry,
         const ArpEntry(ip: '192.168.1.121', mac: '0c:1c:57:77:5f:35'),
+      );
+    });
+
+    test('lowercases an upper-case lladdr', () {
+      final entry = resolver.parseArpOutput(output, '192.168.1.200');
+
+      expect(
+        entry,
+        const ArpEntry(ip: '192.168.1.200', mac: 'aa:bb:cc:dd:ee:ff'),
       );
     });
 

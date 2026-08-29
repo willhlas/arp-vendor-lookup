@@ -57,6 +57,15 @@ class VendorLookupServiceTest < ActiveSupport::TestCase
     end
   end
 
+  test "raises UpstreamBadResponseError on a 200 with a valid but empty JSON array" do
+    stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
+      .to_return(status: 200, body: [].to_json)
+
+    assert_raises(VendorLookupService::UpstreamBadResponseError) do
+      VendorLookupService.new("AA:BB:CC:DD:EE:FF", "192.168.1.24").call
+    end
+  end
+
   test "raises UpstreamRateLimitedError on a 429" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 429, body: "")
