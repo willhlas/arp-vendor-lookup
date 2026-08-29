@@ -8,6 +8,7 @@ class Lookup extends Equatable {
   const Lookup({
     required this.id,
     required this.mac,
+    required this.ip,
     required this.vendorName,
     required this.createdAt,
     required this.updatedAt,
@@ -17,6 +18,7 @@ class Lookup extends Equatable {
 
   final int id;
   final String mac;
+  final String ip;
   final String? vendorName;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -26,5 +28,5 @@ class Lookup extends Equatable {
   Map<String, dynamic> toJson() => _$LookupToJson(this);
 
   @override
-  List<Object?> get props => [id, mac, vendorName, createdAt, updatedAt];
+  List<Object?> get props => [id, mac, ip, vendorName, createdAt, updatedAt];
 }

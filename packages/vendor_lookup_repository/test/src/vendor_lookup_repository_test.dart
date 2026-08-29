@@ -29,6 +29,7 @@ void main() {
   final foundLookup = Lookup(
     id: 1,
     mac: mac,
+    ip: ip,
     vendorName: 'Example Vendor',
     createdAt: DateTime.utc(2026, 8, 28),
     updatedAt: DateTime.utc(2026, 8, 28),
@@ -37,6 +38,7 @@ void main() {
   final notFoundLookup = Lookup(
     id: 2,
     mac: mac,
+    ip: ip,
     vendorName: null,
     createdAt: DateTime.utc(2026, 8, 28),
     updatedAt: DateTime.utc(2026, 8, 28),
@@ -53,7 +55,7 @@ void main() {
         expect(result.mac, isNull);
         expect(result.vendorLookup, isNull);
         expect(result.arpMiss, isTrue);
-        verifyNever(() => vendorApiClient.lookupByMac(any()));
+        verifyNever(() => vendorApiClient.lookupByMac(any(), any()));
       },
     );
 
@@ -72,7 +74,7 @@ void main() {
           ),
         ),
       );
-      verifyNever(() => vendorApiClient.lookupByMac(any()));
+      verifyNever(() => vendorApiClient.lookupByMac(any(), any()));
     });
 
     test('an ArpParseFailure is wrapped in an ArpLookupFailure', () async {
@@ -95,7 +97,7 @@ void main() {
     test('a found vendor is reflected in the result', () async {
       when(() => arpResolver.resolve(ip)).thenAnswer((_) async => entry);
       when(
-        () => vendorApiClient.lookupByMac(mac),
+        () => vendorApiClient.lookupByMac(mac, ip),
       ).thenAnswer((_) async => foundLookup);
 
       final result = await repository.lookupByIp(ip);
@@ -111,7 +113,7 @@ void main() {
       () async {
         when(() => arpResolver.resolve(ip)).thenAnswer((_) async => entry);
         when(
-          () => vendorApiClient.lookupByMac(mac),
+          () => vendorApiClient.lookupByMac(mac, ip),
         ).thenAnswer((_) async => notFoundLookup);
 
         final result = await repository.lookupByIp(ip);
@@ -134,7 +136,7 @@ void main() {
         'VendorApiLookupFailure',
         () async {
           when(() => arpResolver.resolve(ip)).thenAnswer((_) async => entry);
-          when(() => vendorApiClient.lookupByMac(mac)).thenThrow(failure);
+          when(() => vendorApiClient.lookupByMac(mac, ip)).thenThrow(failure);
 
           await expectLater(
             () => repository.lookupByIp(ip),

@@ -305,6 +305,12 @@ abstract class AppLocalizations {
   /// **'{count} total'**
   String recentLookupsCount(int count);
 
+  /// Column header for the IP address in the recent lookups table.
+  ///
+  /// In en, this message translates to:
+  /// **'IP'**
+  String get ipColumnHeader;
+
   /// Column header for the MAC address in the recent lookups table.
   ///
   /// In en, this message translates to:

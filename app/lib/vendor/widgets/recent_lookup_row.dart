@@ -20,10 +20,14 @@ class RecentLookupRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
+            child: Text(lookup.ip, style: AppTextStyles.mono(fontSize: 13)),
+          ),
+          Expanded(
+            flex: 2,
             child: Text(lookup.mac, style: AppTextStyles.mono(fontSize: 13)),
           ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: lookup.found
                 ? Row(
                     children: [

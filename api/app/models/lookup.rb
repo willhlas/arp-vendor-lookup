@@ -1,3 +1,5 @@
+require "resolv"
+
 class Lookup < ApplicationRecord
   MAC_FORMAT = /\A([0-9A-F]{2}:){5}[0-9A-F]{2}\z/
   RECENT_LIMIT = 20
@@ -5,8 +7,9 @@ class Lookup < ApplicationRecord
   before_validation :normalize_mac
 
   validates :mac, presence: true, format: { with: MAC_FORMAT }, uniqueness: true
+  validates :ip, presence: true, format: { with: Resolv::IPv4::Regex }
 
-  scope :recent, -> { order(created_at: :desc).limit(RECENT_LIMIT) }
+  scope :recent, -> { order(updated_at: :desc).limit(RECENT_LIMIT) }
 
   def self.normalize_mac(value)
     hex = value.to_s.upcase.gsub(/[^0-9A-F]/, "")

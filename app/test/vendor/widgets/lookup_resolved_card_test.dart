@@ -28,6 +28,7 @@ void main() {
             vendorLookup: Lookup(
               id: 2,
               mac: 'aa:bb:cc:dd:ee:ff',
+              ip: '192.168.1.24',
               vendorName: 'Acme Corp',
               createdAt: DateTime(2026),
               updatedAt: DateTime(2026),

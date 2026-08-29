@@ -2,29 +2,31 @@ require "test_helper"
 
 class LookupsTest < ActionDispatch::IntegrationTest
   test "returns a cached lookup without hitting upstream" do
-    Lookup.create!(mac: "AA:BB:CC:DD:EE:FF", vendor_name: "Example Vendor")
+    Lookup.create!(mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24", vendor_name: "Example Vendor")
 
-    get "/lookups", params: { mac: "aa:bb:cc:dd:ee:ff" }
+    get "/lookups", params: { mac: "aa:bb:cc:dd:ee:ff", ip: "192.168.1.24" }
 
     assert_response :success
-    assert_equal "Example Vendor", JSON.parse(response.body)["vendor_name"]
+    body = JSON.parse(response.body)
+    assert_equal "Example Vendor", body["vendor_name"]
+    assert_equal "192.168.1.24", body["ip"]
   end
 
   test "fetches, persists, and returns vendor on a cache miss" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 200, body: [ { "company" => "Example Vendor" } ].to_json)
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :success
-    assert Lookup.exists?(mac: "AA:BB:CC:DD:EE:FF", vendor_name: "Example Vendor")
+    assert Lookup.exists?(mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24", vendor_name: "Example Vendor")
   end
 
   test "returns 404 and caches a not-found result on upstream 204" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 204, body: "")
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :not_found
     assert Lookup.exists?(mac: "AA:BB:CC:DD:EE:FF", vendor_name: nil)
@@ -34,45 +36,59 @@ class LookupsTest < ActionDispatch::IntegrationTest
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 204, body: "")
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
     assert_response :not_found
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :not_found
     assert_requested :get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF", times: 1
   end
 
   test "returns 422 for a malformed mac" do
-    get "/lookups", params: { mac: "not-a-mac" }
+    get "/lookups", params: { mac: "not-a-mac", ip: "192.168.1.24" }
 
     assert_response :unprocessable_entity
     assert JSON.parse(response.body)["error"].present?
   end
 
   test "returns 422 for a blank mac param" do
-    get "/lookups", params: { mac: "" }
+    get "/lookups", params: { mac: "", ip: "192.168.1.24" }
 
     assert_response :unprocessable_entity
     assert JSON.parse(response.body)["error"].present?
   end
 
   test "returns 422 for a mac with the wrong octet count" do
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE", ip: "192.168.1.24" }
 
     assert_response :unprocessable_entity
   end
 
   test "returns 422 for a mac with non-hex characters at the right length" do
-    get "/lookups", params: { mac: "ZZ:ZZ:ZZ:ZZ:ZZ:ZZ" }
+    get "/lookups", params: { mac: "ZZ:ZZ:ZZ:ZZ:ZZ:ZZ", ip: "192.168.1.24" }
 
     assert_response :unprocessable_entity
+  end
+
+  test "returns 422 for a malformed ip" do
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "not-an-ip" }
+
+    assert_response :unprocessable_entity
+    assert JSON.parse(response.body)["error"].present?
+  end
+
+  test "returns 422 for a blank ip param" do
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "" }
+
+    assert_response :unprocessable_entity
+    assert JSON.parse(response.body)["error"].present?
   end
 
   test "returns 503 when the upstream API is unreachable" do
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF").to_timeout
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :service_unavailable
     assert_not Lookup.exists?(mac: "AA:BB:CC:DD:EE:FF")
@@ -82,7 +98,7 @@ class LookupsTest < ActionDispatch::IntegrationTest
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 500, body: "")
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :bad_gateway
     assert JSON.parse(response.body)["error"].present?
@@ -92,7 +108,7 @@ class LookupsTest < ActionDispatch::IntegrationTest
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 200, body: "not json")
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :bad_gateway
   end
@@ -101,7 +117,7 @@ class LookupsTest < ActionDispatch::IntegrationTest
     stub_request(:get, "https://www.macvendorlookup.com/api/v2/AA:BB:CC:DD:EE:FF")
       .to_return(status: 429, body: "")
 
-    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+    get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
 
     assert_response :too_many_requests
   end
@@ -111,7 +127,7 @@ class LookupsTest < ActionDispatch::IntegrationTest
       .to_return(status: 200, body: [ { "company" => "Example Vendor" } ].to_json)
 
     with_racing_lookup_create do
-      get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF" }
+      get "/lookups", params: { mac: "AA:BB:CC:DD:EE:FF", ip: "192.168.1.24" }
     end
 
     assert_response :success
@@ -119,8 +135,8 @@ class LookupsTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /lookups with no mac returns recent lookups, newest first" do
-    older = Lookup.create!(mac: "11:22:33:44:55:66", vendor_name: "Old Co")
-    newer = Lookup.create!(mac: "AA:BB:CC:DD:EE:FF", vendor_name: "New Co")
+    older = Lookup.create!(mac: "11:22:33:44:55:66", ip: "10.0.0.1", vendor_name: "Old Co")
+    newer = Lookup.create!(mac: "AA:BB:CC:DD:EE:FF", ip: "10.0.0.2", vendor_name: "New Co")
 
     get "/lookups"
 
@@ -128,9 +144,28 @@ class LookupsTest < ActionDispatch::IntegrationTest
     assert_equal [ newer.mac, older.mac ], JSON.parse(response.body).map { |l| l["mac"] }
   end
 
+  test "re-looking-up an older cached mac from a new ip bumps it to the front" do
+    older = Lookup.create!(mac: "11:22:33:44:55:66", ip: "10.0.0.1", vendor_name: "Old Co")
+    newer = Lookup.create!(mac: "AA:BB:CC:DD:EE:FF", ip: "10.0.0.2", vendor_name: "New Co")
+
+    get "/lookups", params: { mac: older.mac, ip: "10.0.0.99" }
+    assert_response :success
+
+    get "/lookups"
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal [ older.mac, newer.mac ], body.map { |l| l["mac"] }
+    assert_equal "10.0.0.99", body.first["ip"]
+  end
+
   test "GET /lookups only returns the most recent RECENT_LIMIT lookups" do
     (Lookup::RECENT_LIMIT + 5).times do |i|
-      Lookup.create!(mac: "00:00:00:00:%02X:%02X" % [ i / 256, i % 256 ], vendor_name: "Vendor #{i}")
+      Lookup.create!(
+        mac: "00:00:00:00:%02X:%02X" % [ i / 256, i % 256 ],
+        ip: "10.0.0.#{i % 254 + 1}",
+        vendor_name: "Vendor #{i}"
+      )
     end
 
     get "/lookups"
@@ -156,8 +191,8 @@ class LookupsTest < ActionDispatch::IntegrationTest
   # (via #save!, which isn't overridden) and then raise the same uniqueness
   # error a real race would produce.
   def with_racing_lookup_create
-    Lookup.define_singleton_method(:create!) do |mac:, vendor_name:|
-      Lookup.new(mac: mac, vendor_name: vendor_name).save!
+    Lookup.define_singleton_method(:create!) do |mac:, ip:, vendor_name:|
+      Lookup.new(mac: mac, ip: ip, vendor_name: vendor_name).save!
       raise ActiveRecord::RecordInvalid, Lookup.new
     end
     yield

@@ -133,10 +133,14 @@ class _ColumnHeaderRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
+            child: Text(l10n.ipColumnHeader.toUpperCase(), style: style),
+          ),
+          Expanded(
+            flex: 2,
             child: Text(l10n.macColumnHeader.toUpperCase(), style: style),
           ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Text(l10n.vendorColumnHeader.toUpperCase(), style: style),
           ),
           Expanded(

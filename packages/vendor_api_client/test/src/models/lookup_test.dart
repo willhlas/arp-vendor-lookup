@@ -6,6 +6,7 @@ void main() {
     final foundJson = {
       'id': 1,
       'mac': 'AA:BB:CC:DD:EE:FF',
+      'ip': '192.168.1.24',
       'vendor_name': 'Example Vendor',
       'created_at': '2026-08-28T18:20:00.000Z',
       'updated_at': '2026-08-28T18:20:00.000Z',
@@ -14,6 +15,7 @@ void main() {
     final notFoundJson = {
       'id': 2,
       'mac': 'AA:BB:CC:DD:EE:FF',
+      'ip': '192.168.1.24',
       'vendor_name': null,
       'created_at': '2026-08-28T18:20:00.000Z',
       'updated_at': '2026-08-28T18:20:00.000Z',
@@ -24,6 +26,7 @@ void main() {
 
       expect(lookup.id, 1);
       expect(lookup.mac, 'AA:BB:CC:DD:EE:FF');
+      expect(lookup.ip, '192.168.1.24');
       expect(lookup.vendorName, 'Example Vendor');
       expect(lookup.createdAt, DateTime.parse('2026-08-28T18:20:00.000Z'));
       expect(lookup.updatedAt, DateTime.parse('2026-08-28T18:20:00.000Z'));
@@ -46,6 +49,7 @@ void main() {
     test('toJson round-trips to snake_case keys', () {
       final json = Lookup.fromJson(foundJson).toJson();
 
+      expect(json['ip'], '192.168.1.24');
       expect(json['vendor_name'], 'Example Vendor');
       expect(json['created_at'], isA<String>());
       expect(json['updated_at'], isA<String>());

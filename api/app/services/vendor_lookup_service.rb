@@ -1,9 +1,11 @@
 require "net/http"
 require "json"
+require "resolv"
 
 class VendorLookupService
   class Error < StandardError; end
   class InvalidMacError < Error; end
+  class InvalidIpError < Error; end
   class UpstreamError < Error; end
   class UpstreamUnavailableError < UpstreamError; end
   class UpstreamBadResponseError < UpstreamError; end
@@ -11,8 +13,9 @@ class VendorLookupService
 
   ENDPOINT = "https://www.macvendorlookup.com/api/v2/%s"
 
-  def initialize(raw_mac)
+  def initialize(raw_mac, raw_ip)
     @raw_mac = raw_mac
+    @raw_ip = raw_ip
   end
 
   def call
@@ -21,15 +24,25 @@ class VendorLookupService
       raise InvalidMacError, "mac must be a full 6-octet address, e.g. AA:BB:CC:DD:EE:FF"
     end
 
-    Lookup.find_by(mac: mac) || fetch_and_persist(mac)
+    unless @raw_ip.to_s.match?(Resolv::IPv4::Regex)
+      raise InvalidIpError, "ip must be a valid IPv4 address, e.g. 192.168.1.24"
+    end
+
+    lookup = Lookup.find_by(mac: mac)
+    if lookup
+      lookup.update!(ip: @raw_ip)
+      lookup
+    else
+      fetch_and_persist(mac, @raw_ip)
+    end
   end
 
   private
 
-  def fetch_and_persist(mac)
-    Lookup.create!(mac: mac, vendor_name: fetch_vendor_name(mac))
+  def fetch_and_persist(mac, ip)
+    Lookup.create!(mac: mac, ip: ip, vendor_name: fetch_vendor_name(mac))
   rescue ActiveRecord::RecordInvalid
-    Lookup.find_by!(mac: mac)
+    Lookup.find_by!(mac: mac).tap { |lookup| lookup.update!(ip: ip) }
   end
 
   def fetch_vendor_name(mac)

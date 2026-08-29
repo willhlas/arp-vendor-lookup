@@ -10,9 +10,9 @@ class LookupsController < ApplicationController
   private
 
   def lookup_by_mac
-    lookup = VendorLookupService.new(params[:mac]).call
+    lookup = VendorLookupService.new(params[:mac], params[:ip]).call
     render json: lookup, status: lookup.found? ? :ok : :not_found
-  rescue VendorLookupService::InvalidMacError => e
+  rescue VendorLookupService::InvalidMacError, VendorLookupService::InvalidIpError => e
     render json: { error: e.message }, status: :unprocessable_entity
   rescue VendorLookupService::UpstreamRateLimitedError => e
     render json: { error: e.message }, status: :too_many_requests
